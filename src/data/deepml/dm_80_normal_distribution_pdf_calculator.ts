@@ -1,0 +1,16 @@
+import { Problem } from '../../types';
+
+export const DM_80_NORMAL_DISTRIBUTION_PDF_CALCULATOR: Problem = {
+  "id": "dm_80_normal_distribution_pdf_calculator",
+  "title": "Normal Distribution PDF Calculator",
+  "difficulty": "Medium",
+  "tags": [
+    "Probability"
+  ],
+  "descriptionMarkdown": "Write a Python function to calculate the probability density function (PDF) of the normal distribution for a given value, mean, and standard deviation. Use the closed-form formula of the normal distribution and return the PDF value rounded to 5 decimal places.\n\nExample:\n- Input: x = 16, mean = 15, std_dev = 2.04\n- Output: 0.17342\n\nThe function computes the PDF using x = 16, mean = 15, and std_dev = 2.04.",
+  "solutionExplanation": "The normal distribution PDF for a value x with mean \u03bc and standard deviation \u03c3 is given by:\n\nf(x) = (1 / (\u03c3\u221a(2\u03c0))) * exp(-0.5 * ((x - \u03bc) / \u03c3)^2)\n\nTo compute this efficiently and robustly, we use PyTorch tensor operations. We convert inputs to tensors (allowing both scalars and tensors), validate that \u03c3 > 0 to avoid invalid computations, and apply the formula with torch operations like torch.sqrt and torch.exp. Finally, we round the result to 5 decimal places using a tensor-friendly rounding approach and return a Python float for scalar inputs (or a tensor if vectorized inputs are used).\n\nThis approach is production-ready, supports vectorized inputs for batch computations, and uses PyTorch for numerical stability and performance. The example provided verifies the correct output for the given parameters.",
+  "solutionCode": "import math\nimport torch\n\ndef normal_pdf(x, mean, std_dev):\n    \"\"\"\n    Calculate the PDF of a normal distribution at value x with mean and std_dev.\n    Returns the result rounded to 5 decimal places.\n\n    Supports scalar or tensor inputs. If inputs are scalars, returns a Python float.\n    If any input is a tensor, returns a tensor (rounded to 5 decimals).\n    \"\"\"\n    # Convert to tensors (use float64 for better precision in rounding)\n    x_t = torch.as_tensor(x, dtype=torch.float64)\n    mu_t = torch.as_tensor(mean, dtype=torch.float64)\n    sigma_t = torch.as_tensor(std_dev, dtype=torch.float64)\n\n    # Validate standard deviation\n    if torch.any(sigma_t <= 0):\n        raise ValueError(\"std_dev must be positive.\")\n\n    # Compute constants and exponent using PyTorch ops\n    two_pi = torch.tensor(2.0 * math.pi, dtype=torch.float64)\n    coeff = 1.0 / (sigma_t * torch.sqrt(two_pi))\n    z = (x_t - mu_t) / sigma_t\n    pdf = coeff * torch.exp(-0.5 * z * z)\n\n    # Round to 5 decimals in a tensor-safe way\n    pdf_rounded = torch.round(pdf * 1e5) / 1e5\n\n    # If scalar result, return a Python float; else return tensor\n    return pdf_rounded.item() if pdf_rounded.numel() == 1 else pdf_rounded\n\n\ndef solution():\n    # Example usage as per the prompt\n    x, mean, std_dev = 16, 15, 2.04\n    result = normal_pdf(x, mean, std_dev)\n    # For demonstration, print the result; in production, we typically return it\n    print(result)  # Expected: 0.17342\n    return result\n\nif __name__ == \"__main__\":\n    solution()\n",
+  "timeComplexity": "O(1)",
+  "spaceComplexity": "O(1)",
+  "platform": "deepml"
+};

@@ -1,0 +1,19 @@
+import { Problem } from '../../types';
+
+export const DM_104_BINARY_CLASSIFICATION_WITH_LOGISTIC_REGRESSION: Problem = {
+  "id": "dm_104_binary_classification_with_logistic_regression",
+  "title": "Binary Classification with Logistic Regression",
+  "difficulty": "Easy",
+  "tags": [
+    "Linear Algebra",
+    "Matrix Operations",
+    "Activation Functions",
+    "Probability"
+  ],
+  "descriptionMarkdown": "Implement the prediction function for binary classification using Logistic Regression. Your task is to compute class probabilities using the sigmoid function and return binary predictions based on a threshold of 0.5.\n\nGiven input features X, weights w, and bias b, compute the linear combination z = Xw + b, apply the sigmoid function \u03c3(z) = 1 / (1 + exp(-z)) to get probabilities, and threshold at 0.5 to obtain binary predictions (0 or 1).\n\nExample:\n\nInput:\n\npredict_logistic(np.array([[1, 1], [2, 2], [-1, -1], [-2, -2]]), np.array([1, 1]), 0)\n\nOutput:\n\n[1 1 0 0]\n\nReasoning:\nEach sample's linear combination is computed using z = Xw + b. The sigmoid function is applied, and the output is thresholded at 0.5, resulting in binary predictions.",
+  "solutionExplanation": "Logistic regression models the probability that a binary label is 1 as a sigmoid of a linear function of the inputs. For each sample x, we compute z = x^T w + b. The sigmoid function \u03c3(z) = 1 / (1 + exp(-z)) maps real-valued scores into probabilities in [0, 1]. These probabilities can then be converted into class predictions by thresholding at 0.5: if \u03c3(z) \u2265 0.5, predict 1; otherwise, predict 0.\n\nThe implementation should be fully vectorized for efficiency. Given an input matrix X of shape (N, D), a weight vector w of shape (D,) (or (D, 1)), and a scalar bias b, we compute z = X @ w + b, apply torch.sigmoid to obtain probabilities, and then compare to 0.5 to get integer predictions. Using PyTorch ensures high-performance tensor operations and allows the code to be easily integrated into broader deep learning pipelines if needed.",
+  "solutionCode": "import torch\nfrom typing import Union\n\ndef predict_logistic(X: Union[torch.Tensor, 'np.ndarray', list],\n                     weights: Union[torch.Tensor, 'np.ndarray', list],\n                     bias: Union[float, int, torch.Tensor]) -> torch.Tensor:\n    \"\"\"\n    Implements binary classification prediction using Logistic Regression.\n\n    Args:\n        X: Input feature matrix of shape (N, D). Can be a torch.Tensor, numpy array, or list.\n        weights: Model weights of shape (D,) or (D, 1). Can be a torch.Tensor, numpy array, or list.\n        bias: Model bias (scalar or 0-d/1-d tensor).\n\n    Returns:\n        torch.Tensor: Binary predictions (0 or 1) of shape (N,), dtype torch.long.\n    \"\"\"\n    # Convert inputs to torch tensors with consistent dtype\n    X = torch.as_tensor(X, dtype=torch.float32)\n    w = torch.as_tensor(weights, dtype=torch.float32)\n    b = torch.as_tensor(bias, dtype=torch.float32)\n\n    # Ensure weight shape is (D,)\n    if w.ndim == 2 and w.shape[1] == 1:\n        w = w.squeeze(1)\n    elif w.ndim > 1:\n        w = w.view(-1)\n\n    # Compute linear combination: z = X @ w + b\n    z = X.matmul(w) + b  # (N,)\n\n    # Apply sigmoid to obtain probabilities\n    probs = torch.sigmoid(z)\n\n    # Threshold at 0.5 to get binary predictions\n    preds = (probs >= 0.5).to(torch.long)\n    return preds\n\n\ndef solution():\n    # Example usage matching the problem statement (converted to PyTorch)\n    X = torch.tensor([[1.0, 1.0], [2.0, 2.0], [-1.0, -1.0], [-2.0, -2.0]])\n    weights = torch.tensor([1.0, 1.0])\n    bias = 0.0\n\n    preds = predict_logistic(X, weights, bias)\n    # Expected: tensor([1, 1, 0, 0])\n    return preds\n",
+  "timeComplexity": "O(ND)",
+  "spaceComplexity": "O(N)",
+  "platform": "deepml"
+};

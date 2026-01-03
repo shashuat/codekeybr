@@ -66,10 +66,20 @@ function typingReducer(state: TypingState, action: TypingAction): TypingState {
       // Handle end of content
       if (state.cursorIndex >= target.length) return state;
 
-      // Handle correctness
-      // Special case: Enter key usually maps to '\n' in target
-      const isEnter = char === 'Enter' && targetChar === '\n';
-      const isMatch = char === targetChar || isEnter;
+      // Check if target char is a special character (not alphanumeric or whitespace)
+      const isSpecialChar = targetChar && !/[a-zA-Z0-9\s]/.test(targetChar);
+      
+      // Handle correctness with flexible matching:
+      // 1. Enter key can skip special characters OR match newlines
+      // 2. Case-insensitive matching for letters
+      // 3. Exact match for everything else
+      const isEnter = char === 'Enter';
+      const canSkipWithEnter = isEnter && isSpecialChar;
+      const isNewlineMatch = isEnter && targetChar === '\n';
+      const isCaseInsensitiveMatch = char.toLowerCase() === targetChar.toLowerCase();
+      const isExactMatch = char === targetChar;
+      
+      const isMatch = isExactMatch || isCaseInsensitiveMatch || isNewlineMatch || canSkipWithEnter;
 
       if (isMatch) {
         const nextIndex = state.cursorIndex + 1;

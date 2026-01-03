@@ -1,0 +1,17 @@
+import { Problem } from '../../types';
+
+export const DM_96_IMPLEMENT_THE_HARD_SIGMOID_ACTIVATION_FUNCTION: Problem = {
+  "id": "dm_96_implement_the_hard_sigmoid_activation_function",
+  "title": "Implement the Hard Sigmoid Activation Function",
+  "difficulty": "Easy",
+  "tags": [
+    "Neural Networks",
+    "Activation Functions"
+  ],
+  "descriptionMarkdown": "Implement the Hard Sigmoid activation function, a computationally efficient approximation of the standard sigmoid function. Your function should take a single input value and return the corresponding output based on the Hard Sigmoid definition.\n\nDefinition:\n- HardSigmoid(x) = clamp(0.2x + 0.5, 0, 1)\n  - For large negative x, output saturates at 0\n  - For large positive x, output saturates at 1\n  - In the linear region, it is 0.2x + 0.5\n\nExample:\n- Input: `hard_sigmoid(0.0)`\n- Reasoning: 0.0 falls in the linear region, so `0.2 * 0.0 + 0.5 = 0.5`\n- Output: `0.5`",
+  "solutionExplanation": "The Hard Sigmoid is a piecewise linear approximation of the standard sigmoid function designed for efficiency. Instead of computing an exponential, it uses a simple affine transformation followed by clipping: y = clamp(0.2x + 0.5, 0, 1). This preserves the sigmoid\u2019s general shape while being much cheaper to evaluate and easier to backpropagate through.\n\nIn PyTorch, we can implement this efficiently using vectorized tensor operations. We apply a scale-and-shift (0.2x + 0.5) and then clamp the result to [0, 1]. This operation is differentiable almost everywhere, with a constant slope of 0.2 in the linear region and zero gradients in the saturated regions, making it suitable as an activation function in neural networks. We provide both a functional implementation for scalars and a reusable nn.Module for tensors.",
+  "solutionCode": "import torch\nimport torch.nn as nn\nfrom typing import Union\n\nclass HardSigmoid(nn.Module):\n    \"\"\"PyTorch Module for the Hard Sigmoid activation.\n\n    Implements y = clamp(0.2 * x + 0.5, 0, 1)\n    \"\"\"\n    def __init__(self) -> None:\n        super().__init__()\n\n    def forward(self, input: torch.Tensor) -> torch.Tensor:\n        # Vectorized, differentiable operation\n        return torch.clamp(0.2 * input + 0.5, min=0.0, max=1.0)\n\n\ndef hard_sigmoid(x: float) -> float:\n    \"\"\"Hard Sigmoid for a single float input using PyTorch ops.\n\n    Args:\n        x (float): Input value.\n    Returns:\n        float: Hard Sigmoid(x) = clamp(0.2*x + 0.5, 0, 1)\n    \"\"\"\n    t = torch.tensor(x, dtype=torch.float32)\n    y = torch.clamp(0.2 * t + 0.5, min=0.0, max=1.0)\n    return float(y.item())\n\n\ndef solution():\n    \"\"\"Demonstrates usage of Hard Sigmoid for both scalar and tensor inputs.\n\n    Returns:\n        dict: A dictionary containing example outputs.\n    \"\"\"\n    # Scalar example\n    scalar_input = 0.0\n    scalar_output = hard_sigmoid(scalar_input)\n\n    # Tensor example\n    module = HardSigmoid()\n    x = torch.tensor([-10.0, -2.5, 0.0, 2.5, 10.0], dtype=torch.float32)\n    y = module(x)\n\n    # Print for demonstration\n    print(f\"hard_sigmoid({scalar_input}) = {scalar_output}\")\n    print(\"HardSigmoid tensor output:\", y)\n\n    return {\n        \"scalar_input\": scalar_input,\n        \"scalar_output\": scalar_output,\n        \"tensor_input\": x,\n        \"tensor_output\": y,\n    }\n",
+  "timeComplexity": "O(N)",
+  "spaceComplexity": "O(1)",
+  "platform": "deepml"
+};

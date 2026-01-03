@@ -1,0 +1,16 @@
+import { Problem } from '../../types';
+
+export const DM_52_IMPLEMENT_RECALL_METRIC_IN_BINARY_CLASSIFICATION: Problem = {
+  "id": "dm_52_implement_recall_metric_in_binary_classification",
+  "title": "Implement Recall Metric in Binary Classification",
+  "difficulty": "Easy",
+  "tags": [
+    "Probability"
+  ],
+  "descriptionMarkdown": "Task: Implement Recall in Binary Classification\n\nYour task is to implement the recall metric in a binary classification setting. Recall measures how effectively a model identifies positive instances among all actual positive cases.\n\nWrite a function `recall(y_true, y_pred)` that:\n- Accepts two inputs:\n  - `y_true`: A list/array of true binary labels (0 or 1).\n  - `y_pred`: A list/array of predicted binary labels (0 or 1).\n- Returns the recall value rounded to three decimal places.\n- If the denominator (TP + FN) is zero, return `0.0` to avoid division by zero.\n\nExample:\n\nInput:\n- `y_true = [1, 0, 1, 1, 0, 1]`\n- `y_pred = [1, 0, 1, 0, 0, 1]`\n\nOutput:\n- `0.75`\n\nReasoning: The model correctly identified 3 out of 4 positive instances (TP=3, FN=1), so recall = 3 / (3 + 1) = 0.75.",
+  "solutionExplanation": "Recall in binary classification is defined as TP / (TP + FN), where TP is the number of true positives (predicted 1 and actually 1), and FN is the number of false negatives (predicted 0 but actually 1). It captures the proportion of actual positives that were correctly identified.\n\nTo compute recall robustly, we convert inputs to PyTorch tensors, coerce them to binary (0/1), and use elementwise logical operations to count TP and FN. We handle the edge case where no positives exist in the ground truth (TP + FN = 0) by returning 0.0 to avoid division by zero. Finally, we round the result to three decimal places as required.",
+  "solutionCode": "import torch\nimport torch.nn as nn\n\ndef recall(y_true, y_pred):\n    \"\"\"\n    Compute recall for binary classification: TP / (TP + FN).\n\n    Args:\n        y_true: Iterable of true binary labels (0 or 1).\n        y_pred: Iterable of predicted binary labels (0 or 1).\n\n    Returns:\n        float: Recall rounded to three decimals. Returns 0.0 if (TP + FN) == 0.\n    \"\"\"\n    # Convert inputs to tensors\n    yt = torch.as_tensor(y_true)\n    yp = torch.as_tensor(y_pred)\n\n    if yt.numel() != yp.numel():\n        raise ValueError(f\"Shape mismatch: y_true has {yt.numel()} elements, y_pred has {yp.numel()} elements.\")\n\n    # Flatten and coerce to integer binary (0/1)\n    yt = yt.view(-1).to(dtype=torch.int64)\n    yp = yp.view(-1).to(dtype=torch.int64)\n    yt = (yt != 0).to(torch.int64)\n    yp = (yp != 0).to(torch.int64)\n\n    # Compute True Positives and False Negatives using vectorized ops\n    tp = torch.sum((yt == 1) & (yp == 1)).item()\n    fn = torch.sum((yt == 1) & (yp == 0)).item()\n\n    denom = tp + fn\n    if denom == 0:\n        rec = 0.0\n    else:\n        rec = tp / denom\n\n    return round(float(rec), 3)\n\n\ndef solution():\n    # Example usage\n    import numpy as np\n    y_true = np.array([1, 0, 1, 1, 0, 1])\n    y_pred = np.array([1, 0, 1, 0, 0, 1])\n    print(recall(y_true, y_pred))  # Expected: 0.75\n",
+  "timeComplexity": "O(N)",
+  "spaceComplexity": "O(1)",
+  "platform": "deepml"
+};

@@ -1,0 +1,17 @@
+import { Problem } from '../../types';
+
+export const DM_27_TRANSFORMATION_MATRIX_FROM_BASIS_B_TO_C: Problem = {
+  "id": "dm_27_transformation_matrix_from_basis_b_to_c",
+  "title": "Transformation Matrix from Basis B to C",
+  "difficulty": "Easy",
+  "tags": [
+    "Linear Algebra",
+    "Matrix Operations"
+  ],
+  "descriptionMarkdown": "Given two bases B and C for R^3 (each provided as a 3x3 matrix whose columns are the basis vectors in standard coordinates), compute the transformation matrix P that converts coordinates from basis B to basis C.\n\nExample:\n\nInput:\n\nB = [[1, 0, 0],\n     [0, 1, 0],\n     [0, 0, 1]]\n\nC = [[1, 2.3, 3],\n     [4.4, 25, 6],\n     [7.4, 8, 9]]\n\nOutput (approx.):\n\n[[-0.6772, -0.0126, 0.2342],\n [-0.0184,  0.0505, -0.0275],\n [ 0.5732, -0.0345, -0.0569]]\n\nReasoning: The change-of-coordinates matrix from B to C can be obtained using the inverse (or solve) involving matrix C.",
+  "solutionExplanation": "Let B and C be matrices whose columns are the basis vectors of bases B and C, respectively, expressed in the standard basis of R^3. For any coordinate vector x_B in basis B, the corresponding vector in the standard basis is v = B x_B. To express the same vector in basis C, we need y such that v = C y. Equating both gives B x_B = C y, hence y = C^{-1} B x_B. Therefore, the change-of-coordinates matrix from B-coordinates to C-coordinates is P = C^{-1} B.\n\nNumerically, it is more stable and recommended to avoid explicitly inverting C. Instead, solve the linear system C P = B for P using a linear solver. In PyTorch, this is done with torch.linalg.solve, which computes P directly and robustly.\n\nWhen B is the identity matrix, P reduces to C^{-1}, which matches the example output.",
+  "solutionCode": "import torch\n\ndef transform_basis(B: list[list[float]], C: list[list[float]]) -> list[list[float]]:\n    \"\"\"\n    Compute the change-of-coordinates matrix P that maps coordinates from basis B to basis C.\n    Mathematically: P = C^{-1} B, computed via a linear solve for numerical stability.\n\n    Args:\n        B: n x n list of lists, columns are basis vectors of basis B in the standard basis.\n        C: n x n list of lists, columns are basis vectors of basis C in the standard basis.\n\n    Returns:\n        P as a list of lists (n x n), such that for any x_B, y_C = P @ x_B gives C-coordinates.\n    \"\"\"\n    # Convert inputs to double-precision tensors for numerical robustness\n    B_t = torch.tensor(B, dtype=torch.float64)\n    C_t = torch.tensor(C, dtype=torch.float64)\n\n    # Basic validation\n    if B_t.ndim != 2 or C_t.ndim != 2:\n        raise ValueError(\"B and C must be 2D matrices.\")\n    if B_t.shape[0] != B_t.shape[1] or C_t.shape[0] != C_t.shape[1]:\n        raise ValueError(\"B and C must be square matrices.\")\n    if B_t.shape != C_t.shape:\n        raise ValueError(\"B and C must have the same shape.\")\n\n    # Solve C * P = B for P, which is numerically preferable to explicit inversion\n    P_t = torch.linalg.solve(C_t, B_t)\n\n    # Return as nested Python lists\n    return P_t.tolist()\n\nif __name__ == \"__main__\":\n    # Example usage\n    B = [[1, 0, 0],\n         [0, 1, 0],\n         [0, 0, 1]]\n    C = [[1, 2.3, 3],\n         [4.4, 25, 6],\n         [7.4, 8, 9]]\n\n    P = transform_basis(B, C)\n\n    # Pretty-print with rounding to 4 decimals for readability\n    P_rounded = [[round(val, 4) for val in row] for row in P]\n    print(P_rounded)\n",
+  "timeComplexity": "O(n^3)",
+  "spaceComplexity": "O(n^2)",
+  "platform": "deepml"
+};

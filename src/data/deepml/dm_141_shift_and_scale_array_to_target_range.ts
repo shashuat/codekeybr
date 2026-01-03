@@ -1,0 +1,17 @@
+import { Problem } from '../../types';
+
+export const DM_141_SHIFT_AND_SCALE_ARRAY_TO_TARGET_RANGE: Problem = {
+  "id": "dm_141_shift_and_scale_array_to_target_range",
+  "title": "Shift and Scale Array to Target Range",
+  "difficulty": "Easy",
+  "tags": [
+    "Linear Algebra",
+    "Matrix Operations"
+  ],
+  "descriptionMarkdown": "Write a Python function convert_range that shifts and scales the values of an array from their original range [a, b] (where a = min(x) and b = max(x)) to a new target range [c, d]. Your function should work for both 1D and 2D arrays, returning an array of the same shape. Return floating-point results, and use the correct formula to map the input interval to the output interval.\n\nFormula:\n- f(x) = c + (d - c) / (b - a) * (x - a)\n\nExample:\n- Input:\n  - x = [0, 5, 10]\n  - c, d = 2, 4\n- Output:\n  - [2.0, 3.0, 4.0]\n\nReasoning:\nThe minimum value (a) is 0 and the maximum value (b) is 10. The formula maps 0 to 2, 5 to 3, and 10 to 4 using: f(x) = c + (d - c) / (b - a) * (x - a).",
+  "solutionExplanation": "This task is a direct application of min-max scaling. Given an input tensor x with minimum a and maximum b, we want to linearly map every element from [a, b] to [c, d]. The appropriate affine transformation is f(x) = c + (d - c) * (x - a) / (b - a). This preserves ordering and maps the endpoints exactly: a maps to c and b maps to d.\n\nIn implementation, we compute a = x.min() and b = x.max(), cast to floating point for accurate division, and apply the formula elementwise with vectorized tensor operations. For robustness, we handle the degenerate case where all elements are equal (b == a). In that case, the interval length is zero and the scale is undefined; we return a tensor filled with the midpoint of the target interval (c + d) / 2, which is a reasonable, symmetric choice.",
+  "solutionCode": "import torch\nfrom typing import Union\n\ndef convert_range(values: Union[torch.Tensor, list, tuple], c: float, d: float) -> torch.Tensor:\n    \"\"\"\n    Shift and scale values from their original range [min, max] to target range [c, d].\n\n    Args:\n        values: Input data as a torch.Tensor or a sequence convertible to a tensor.\n        c: Lower bound of the target range.\n        d: Upper bound of the target range.\n\n    Returns:\n        A torch.Tensor of the same shape as input, with values mapped to [c, d].\n    \"\"\"\n    # Convert to float tensor for stable floating-point division\n    x = torch.as_tensor(values, dtype=torch.float32)\n\n    # Compute original range\n    a = torch.min(x)\n    b = torch.max(x)\n\n    # Handle degenerate case where all elements are the same (b - a == 0)\n    if torch.isclose(b, a):\n        fill_val = (float(c) + float(d)) / 2.0\n        return torch.full_like(x, fill_value=fill_val)\n\n    # Apply min-max scaling to [0, 1], then scale and shift to [c, d]\n    scaled_01 = (x - a) / (b - a)\n    out = float(c) + (float(d) - float(c)) * scaled_01\n    return out\n\nif __name__ == \"__main__\":\n    # Example usage\n    x = torch.tensor([0, 5, 10])\n    c, d = 2.0, 4.0\n    print(convert_range(x, c, d))  # tensor([2., 3., 4.])\n\n    # 2D example\n    x2 = torch.tensor([[1, 2, 3], [4, 5, 6]])\n    print(convert_range(x2, -1.0, 1.0))\n\n    # Degenerate case: all values equal\n    x_same = torch.tensor([7, 7, 7])\n    print(convert_range(x_same, 0.0, 10.0))  # tensor filled with 5.0\n",
+  "timeComplexity": "O(N)",
+  "spaceComplexity": "O(1)",
+  "platform": "deepml"
+};
