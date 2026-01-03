@@ -1,14 +1,14 @@
 """
 Auto-generate problems.ts index file
 
-Scans data/problems/ directory and generates TypeScript imports/exports
+Scans src/data/problems/ directory and generates TypeScript imports/exports
 """
 
 import os
 import re
 
-PROBLEMS_DIR = "./data/problems"
-OUTPUT_FILE = "./data/problems.ts"
+PROBLEMS_DIR = "./src/data/problems"
+OUTPUT_FILE = "./src/data/problems.ts"
 
 def generate_problems_index():
     """Generate problems.ts by scanning the problems directory"""

@@ -207,29 +207,30 @@ FORCE_REGENERATE=true python -m scraper.agent
 
 ```
 codekeybr/
-├── App.tsx                    # Main application component
-├── index.tsx                  # Entry point with Analytics
-├── AuthContext.tsx            # Authentication context provider
-├── firebase.ts                # Firebase configuration
-├── types.ts                   # TypeScript type definitions
-├── constants.ts               # Global constants
-├── components/                # React components
-│   ├── ProblemViewer.tsx     # Problem description display
-│   ├── TypingArea.tsx        # Main typing interface
-│   └── StatsModal.tsx        # Completion statistics
-├── hooks/
-│   └── useTypingEngine.ts    # Typing logic and state management
-├── services/
-│   └── userService.ts        # Firestore user data operations
-├── data/                      # Problem data
-│   ├── index.ts              # Platform categories export
-│   ├── problems.ts           # LeetCode problems index
-│   ├── codeforces.ts         # Codeforces problems
-│   ├── deepml.ts             # DeepML problems
-│   └── problems/             # Individual LeetCode problem files
-│       ├── two_sum.ts
-│       ├── reverse_string.ts
-│       └── ...
+├── src/
+│   ├── App.tsx                # Main application component
+│   ├── index.tsx              # Entry point with Analytics
+│   ├── AuthContext.tsx        # Authentication context provider
+│   ├── firebase.ts            # Firebase configuration
+│   ├── types.ts               # TypeScript type definitions
+│   ├── constants.ts           # Global constants
+│   ├── components/            # React components
+│   │   ├── ProblemViewer.tsx # Problem description display
+│   │   ├── TypingArea.tsx    # Main typing interface
+│   │   └── StatsModal.tsx    # Completion statistics
+│   ├── hooks/
+│   │   └── useTypingEngine.ts# Typing logic and state management
+│   ├── services/
+│   │   └── userService.ts    # Firestore user data operations
+│   └── data/                  # Problem data
+│       ├── index.ts          # Platform categories export
+│       ├── problems.ts       # LeetCode problems index
+│       ├── codeforces.ts     # Codeforces problems
+│       ├── deepml.ts         # DeepML problems
+│       └── problems/         # Individual LeetCode problem files
+│           ├── two_sum.ts
+│           ├── reverse_string.ts
+│           └── ...
 ├── scraper/                   # Python AI scraper
 │   ├── agent.py              # Main scraper script
 │   ├── problem_slugs.py      # Problem list to scrape
@@ -271,7 +272,7 @@ codekeybr/
 
 ### Smart Typing Engine
 
-The typing engine ([useTypingEngine.ts](hooks/useTypingEngine.ts)) features:
+The typing engine ([src/hooks/useTypingEngine.ts](src/hooks/useTypingEngine.ts)) features:
 - Character-by-character validation
 - Mistake tracking without blocking
 - Smart tab completion for indentation (2 or 4 spaces)

@@ -46,7 +46,7 @@ The multi-platform architecture allows you to organize problems from different s
 ---
 
 ```
-data/
+src/data/
 ├── index.ts              # Main entry point, exports all platforms
 ├── problems.ts           # LeetCode problems
 ├── codeforces.ts         # Codeforces problems
@@ -65,21 +65,21 @@ data/
 
 ## Adding a New Platform
 
-1. **Create a new directory** in `data/`:
+1. **Create a new directory** in `src/data/`:
    ```bash
-   mkdir data/newplatform
+   mkdir src/data/newplatform
    ```
 
 2. **Create a TEMPLATE.ts** file in the new directory (copy from existing platforms)
 
-3. **Create an index file** `data/newplatform.ts`:
+3. **Create an index file** `src/data/newplatform.ts`:
    ```typescript
    import { Problem } from '../types';
    
    export const NEWPLATFORM_PROBLEMS: Problem[] = [];
    ```
 
-4. **Add to PLATFORM_CATEGORIES** in `data/index.ts`:
+4. **Add to PLATFORM_CATEGORIES** in `src/data/index.ts`:
    ```typescript
    {
      name: 'newplatform',
@@ -90,7 +90,7 @@ data/
    }
    ```
 
-5. **Update the Platform type** in `types.ts`:
+5. **Update the Platform type** in `src/types.ts`:
    ```typescript
    export type Platform = 'leetcode' | 'codeforces' | 'deepml' | 'newplatform';
    ```
@@ -98,19 +98,19 @@ data/
 ## Adding a New Problem
 
 ### For LeetCode:
-1. Copy `data/problems/TEMPLATE.ts` to a new file (e.g., `data/problems/new_problem.ts`)
+1. Copy `src/data/problems/TEMPLATE.ts` to a new file (e.g., `src/data/problems/new_problem.ts`)
 2. Fill in all the fields
-3. Import and add to the array in `data/problems.ts`
+3. Import and add to the array in `src/data/problems.ts`
 
 ### For Codeforces:
-1. Copy `data/codeforces/TEMPLATE.ts` to a new file
+1. Copy `src/data/codeforces/TEMPLATE.ts` to a new file
 2. Fill in all the fields (use appropriate tags for Codeforces)
-3. Import and add to the array in `data/codeforces.ts`
+3. Import and add to the array in `src/data/codeforces.ts`
 
 ### For DeepML:
-1. Copy `data/deepml/TEMPLATE.ts` to a new file
+1. Copy `src/data/deepml/TEMPLATE.ts` to a new file
 2. Fill in all the fields (use ML-specific tags)
-3. Import and add to the array in `data/deepml.ts`
+3. Import and add to the array in `src/data/deepml.ts`
 
 ## Platform-Specific Tags
 

@@ -12,7 +12,7 @@ CodeKeybr is a React-based typing practice application that helps developers bui
 
 ### 1. Enhanced Type System
 
-**File**: `types.ts`
+**File**: `src/types.ts`
 
 Added new fields to the `Problem` interface:
 ```typescript
@@ -28,13 +28,13 @@ interface Problem {
 
 **Before**: Single file with all problems
 ```
-data/
+src/data/
   problems.ts  (contains all problem objects)
 ```
 
 **After**: Individual files per problem
 ```
-data/
+src/data/
   problems.ts     (index file - imports and exports)
   problems/
     two_sum.ts
@@ -45,7 +45,7 @@ data/
 
 ### 3. Dynamic Problem Index
 
-**File**: `data/problems.ts`
+**File**: `src/data/problems.ts`
 
 Now acts as a central index that imports individual problem files:
 
@@ -63,7 +63,7 @@ export const PROBLEMS: Problem[] = [
 
 ### 4. Enhanced Typing Experience
 
-**File**: `components/TypingArea.tsx`
+**File**: `src/components/TypingArea.tsx`
 
 Now displays complexity information between the explanation and code:
 
@@ -110,18 +110,18 @@ A Python script that:
 ### Frontend Architecture
 
 **Component Structure:**
-- `App.tsx` - Main application with view routing (practice, problems, leaderboard)
-- `ProblemViewer.tsx` - Displays problem description with simple Markdown rendering
-- `TypingArea.tsx` - Main typing interface with real-time validation
-- `StatsModal.tsx` - Post-completion statistics display
+- `src/App.tsx` - Main application with view routing (practice, problems, leaderboard)
+- `src/components/ProblemViewer.tsx` - Displays problem description with simple Markdown rendering
+- `src/components/TypingArea.tsx` - Main typing interface with real-time validation
+- `src/components/StatsModal.tsx` - Post-completion statistics display
 
 **State Management:**
-- `useTypingEngine.ts` - Custom hook managing typing state via reducer pattern
+- `src/hooks/useTypingEngine.ts` - Custom hook managing typing state via reducer pattern
 - Local state for UI concerns (modals, view switching)
 - No external state management library (React hooks only)
 
 **Data Flow:**
-1. Problems imported from `data/index.ts`
+1. Problems imported from `src/data/index.ts`
 2. Organized by platform categories
 3. Selected problem passed to components via props
 4. Typing engine manages completion state
@@ -220,36 +220,41 @@ For implementation details, see:
 
 ```
 codekeybr/
-├── scraper_agent.py           # AI scraper script
-├── SCRAPER_README.md          # Scraper documentation
-├── types.ts                   # Enhanced Problem interface
-├── App.tsx                    # Updated to pass complexity props
-├── components/
-│   └── TypingArea.tsx         # Enhanced with complexity display
-└── data/
-    ├── problems.ts            # Central index
-    └── problems/              # Individual problem files
-        ├── two_sum.ts
-        ├── reverse_string.ts
-        ├── contains_duplicate.ts
-        └── valid_anagram.ts
+├── scraper/
+│   ├── agent.py               # AI scraper script
+│   └── problem_slugs.py       # Problem configuration
+├── src/
+│   ├── types.ts               # Enhanced Problem interface
+│   ├── App.tsx                # Updated to pass complexity props
+│   ├── components/
+│   │   └── TypingArea.tsx     # Enhanced with complexity display
+│   └── data/
+│       ├── problems.ts        # Central index
+│       └── problems/          # Individual problem files
+│           ├── two_sum.ts
+│           ├── reverse_string.ts
+│           ├── contains_duplicate.ts
+│           └── valid_anagram.ts
+└── docs/
+    └── SCRAPER_README.md      # Scraper documentation
 ```
 
 ## Adding New Problems
 
 ### Method 1: Using the Scraper (Recommended)
 
-1. Add problem slug to `scraper_agent.py`:
+1. Add problem slug to `scraper/problem_slugs.py`:
    ```python
    slugs_to_crawl = ["two-sum", "your-problem-slug"]
    ```
 
 2. Run the scraper:
    ```bash
-   python scraper_agent.py
+   cd scraper
+   python agent.py
    ```
 
-3. Import in `data/problems.ts`:
+3. Import in `src/data/problems.ts`:
    ```typescript
    import { YOUR_PROBLEM } from './problems/your_problem';
    export const PROBLEMS = [..., YOUR_PROBLEM];
@@ -257,7 +262,7 @@ codekeybr/
 
 ### Method 2: Manual Creation
 
-1. Create a new file: `data/problems/your_problem.ts`
+1. Create a new file: `src/data/problems/your_problem.ts`
 
 2. Use this template:
    ```typescript
@@ -378,7 +383,7 @@ npm run dev
 
 2. **Lazy Loading**
    ```typescript
-   const PROBLEMS = lazy(() => import('./data/problems'));
+   const PROBLEMS = lazy(() => import('./src/data/problems'));
    ```
 
 3. **Indexing**
@@ -404,4 +409,4 @@ When adding problems:
 
 - Check `SCRAPER_README.md` for scraper-specific help
 - Review existing problem files for examples
-- See `types.ts` for the complete interface definition
+- See `src/types.ts` for the complete interface definition

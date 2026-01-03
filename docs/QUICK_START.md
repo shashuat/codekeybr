@@ -43,10 +43,10 @@ That's it! You should see the CodeKeybr interface.
 All core features are ready to use:
 
 1. ✅ **Enhanced Type System** - `tags`, `timeComplexity`, `spaceComplexity` in Problem interface
-2. ✅ **Modular File Structure** - Individual problem files in `data/problems/`
+2. ✅ **Modular File Structure** - Individual problem files in `src/data/problems/`
 3. ✅ **Multi-Platform Support** - LeetCode, Codeforces, DeepML
 4. ✅ **AI Scraper** - Python script with OpenAI GPT-4 integration
-5. ✅ **Dynamic Problem Index** - Auto-generated `data/problems.ts`
+5. ✅ **Dynamic Problem Index** - Auto-generated `src/data/problems.ts`
 6. ✅ **Complexity Display** - Shows Big O notation in typing area
 7. ✅ **Real-time Stats** - WPM tracking, accuracy, completion modal
 8. ✅ **Smart Typing Engine** - Tab completion, mistake tracking
@@ -57,24 +57,27 @@ All core features are ready to use:
 
 ```
 codekeybr/
-├── App.tsx                    # Main app with view routing
-├── index.tsx                  # Entry point
-├── types.ts                   # TypeScript type definitions
-├── components/                # React components
-│   ├── ProblemViewer.tsx     # Problem description
-│   ├── TypingArea.tsx        # Typing interface
-│   └── StatsModal.tsx        # Completion stats
-├── hooks/
-│   └── useTypingEngine.ts    # Typing logic
-├── data/                      # Problem data
-│   ├── index.ts              # Platform exports
-│   ├── problems.ts           # LeetCode problems
-│   ├── codeforces.ts         # Codeforces problems  
-│   ├── deepml.ts             # DeepML problems
-│   └── problems/             # Individual problem files
-│       ├── two_sum.ts
-│       ├── add_two_numbers.ts
-│       └── ...
+├── src/
+│   ├── App.tsx                # Main app with view routing
+│   ├── index.tsx              # Entry point
+│   ├── types.ts               # TypeScript type definitions
+│   ├── components/            # React components
+│   │   ├── ProblemViewer.tsx # Problem description
+│   │   ├── TypingArea.tsx    # Typing interface
+│   │   └── StatsModal.tsx    # Completion stats
+│   ├── hooks/
+│   │   └── useTypingEngine.ts# Typing logic
+│   ├── data/                  # Problem data
+│   │   ├── index.ts          # Platform exports
+│   │   ├── problems.ts       # LeetCode problems
+│   │   ├── codeforces.ts     # Codeforces problems  
+│   │   ├── deepml.ts         # DeepML problems
+│   │   └── problems/         # Individual problem files
+│   │       ├── two_sum.ts
+│   │       ├── add_two_numbers.ts
+│   │       └── ...
+│   └── services/
+│       └── userService.ts    # Firebase operations
 ├── scraper/                   # Python scraper
 │   ├── agent.py              # Main scraper
 │   ├── problem_slugs.py      # Problems to scrape
@@ -157,7 +160,7 @@ Choose from:
 
 3. **Check output**
    
-   New problem files appear in `data/problems/` and index is auto-updated!
+   New problem files appear in `src/data/problems/` and index is auto-updated!
 
 4. **Test in app**
    ```bash

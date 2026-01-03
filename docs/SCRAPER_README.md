@@ -77,8 +77,8 @@ python -m scraper.agent
    - Fetches problem from LeetCode GraphQL API
    - Processes with OpenAI GPT-4
    - Generates TypeScript problem file
-   - Saves to `data/problems/`
-4. Auto-generates `data/problems.ts` index file
+   - Saves to `src/data/problems/`
+4. Auto-generates `src/data/problems.ts` index file
 5. Prints summary statistics
 
 ### Force Regeneration
@@ -114,7 +114,7 @@ SLUGS_TO_CRAWL = [
 
 ### Output
 
-Generated files will be saved to `data/problems/` with this structure:
+Generated files will be saved to `src/data/problems/` with this structure:
 
 ```typescript
 import { Problem } from '../../types';
@@ -217,7 +217,7 @@ done
 Edit `scraper/agent.py`:
 
 ```python
-OUTPUT_DIR = "./data/custom_problems"
+OUTPUT_DIR = "./src/data/custom_problems"
 ```
 
 ---
@@ -231,11 +231,11 @@ OUTPUT_DIR = "./data/custom_problems"
 
 ### 1. Review Generated Files
 
-Check the generated `.ts` files in `data/problems/` to ensure quality.
+Check the generated `.ts` files in `src/data/problems/` to ensure quality.
 
 ### 2. Automatic Index Update
 
-The scraper automatically updates `data/problems.ts` with new imports. No manual editing needed!
+The scraper automatically updates `src/data/problems.ts` with new imports. No manual editing needed!
 
 ### 3. Test Your App
 
@@ -248,7 +248,7 @@ Navigate to the problems view and verify the new problems appear correctly.
 ### 4. Commit Changes
 
 ```bash
-git add data/problems/
+git add src/data/problems/
 git commit -m "Add new LeetCode problems"
 ```
 

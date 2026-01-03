@@ -24,7 +24,7 @@ load_dotenv()
 # =====================
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-OUTPUT_DIR = "./data/problems"
+OUTPUT_DIR = "./src/data/problems"
 MODEL_NAME = "gpt-5"   
 MAX_RETRIES = 3
 FORCE_REGENERATE = os.getenv("FORCE_REGENERATE", "false").lower() == "true"
