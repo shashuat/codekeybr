@@ -1,66 +1,110 @@
 # CodeKeybr Problem Scraper
 
+**Author:** [shashuat](https://github.com/shashuat)
+
 An AI-powered tool to automatically scrape LeetCode problems and convert them into CodeKeybr's problem format.
+
+## Features
+
+- 🤖 **AI-Powered** - Uses OpenAI GPT-4 to process and format problem content
+- 📥 **GraphQL Integration** - Fetches problems directly from LeetCode's API
+- 📝 **Auto-Generation** - Creates TypeScript problem files automatically
+- ✅ **Checkpointing** - Skips already processed problems (unless forced)
+- 🔄 **Retry Logic** - Automatically retries failed requests (up to 3 times)
+- 📊 **Progress Tracking** - Shows real-time status of scraping operations
+- 🎯 **Smart Formatting** - Converts HTML to clean Markdown
+- 🧠 **Complexity Analysis** - Auto-calculates Big O time/space complexity
 
 ## Setup
 
 ### 1. Install Dependencies
 
+**Required packages:**
 ```bash
-pip install openai requests
+pip install openai requests python-dotenv
 ```
+
+**What each package does:**
+- `openai` - OpenAI API client for GPT-4 integration
+- `requests` - HTTP client for LeetCode GraphQL queries
+- `python-dotenv` - Load environment variables from .env file
 
 ### 2. Set Your OpenAI API Key
 
-You have three options:
+You have two options:
 
-**Option A: Environment Variable (Recommended)**
+**Option A: Using .env File (Recommended)**
+
+1. Create a `.env` file in the project root:
+   ```bash
+   touch .env
+   ```
+
+2. Add your API key to the file:
+   ```env
+   OPENAI_API_KEY=sk-your-actual-api-key-here
+   ```
+
+3. The scraper will automatically load it using `python-dotenv`
+
+**Option B: Environment Variable**
 ```bash
 export OPENAI_API_KEY="sk-your-api-key-here"
 ```
 
-**Option B: Edit the Script**
-Open `scraper_agent.py` and replace:
-```python
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "your_api_key_here")
-```
-
-**Option C: Create a .env File**
-Create a `.env` file in the project root:
-```
-OPENAI_API_KEY=sk-your-api-key-here
-```
-Then add this to the script:
-```python
-from dotenv import load_dotenv
-load_dotenv()
-```
+**Getting an API Key:**
+1. Go to [platform.openai.com](https://platform.openai.com)
+2. Sign up or log in
+3. Navigate to API Keys section
+4. Create a new secret key
+5. Copy and save it securely
 
 ## Usage
 
 ### Basic Usage
 
+From the project root directory:
+
 ```bash
-python scraper_agent.py
+python -m scraper.agent
 ```
 
-This will scrape the default problems:
-- Two Sum
-- Reverse String
-- Contains Duplicate
-- Valid Anagram
+**What happens:**
+1. Loads environment variables from `.env`
+2. Reads problem slugs from `scraper/problem_slugs.py`
+3. For each slug:
+   - Checks if file already exists (skips if yes)
+   - Fetches problem from LeetCode GraphQL API
+   - Processes with OpenAI GPT-4
+   - Generates TypeScript problem file
+   - Saves to `data/problems/`
+4. Auto-generates `data/problems.ts` index file
+5. Prints summary statistics
 
-### Adding More Problems
+### Force Regeneration
 
-Edit the `slugs_to_crawl` list in `scraper_agent.py`:
+To overwrite existing problem files:
+
+```bash
+FORCE_REGENERATE=true python -m scraper.agent
+```
+
+**Use cases:**
+- Update problem format/structure
+- Regenerate with improved AI prompts
+- Fix errors in existing problems
+
+### Configuration
+
+Edit `scraper/problem_slugs.py` to configure which problems to scrape:
 
 ```python
-slugs_to_crawl = [
+SLUGS_TO_CRAWL = [
     "two-sum",
+    "reverse-linked-list",
+    "valid-parentheses",
     "best-time-to-buy-and-sell-stock",
-    "valid-palindrome",
-    "merge-two-sorted-lists",
-    "binary-search"
+    # Add more problem slugs here
 ]
 ```
 
@@ -88,26 +132,110 @@ export const TWO_SUM: Problem = {
 };
 ```
 
+## Troubleshooting
+
+### Common Issues
+
+**Error: `OpenAIError: The api_key client option must be set`**
+
+**Cause:** API key not loaded properly
+
+**Solutions:**
+1. Verify `.env` file exists in project root
+2. Check API key is correctly formatted: `OPENAI_API_KEY=sk-...`
+3. Ensure `python-dotenv` is installed: `pip install python-dotenv`
+4. Verify `.env` has no quotes around the key value
+
+**Error: `ModuleNotFoundError: No module named 'openai'`**
+
+**Solution:**
+```bash
+pip install openai requests python-dotenv
+```
+
+**Error: `Failed fetching <slug>: JSONDecodeError`**
+
+**Cause:** LeetCode API returned invalid JSON or rate limiting
+
+**Solutions:**
+1. Wait a few minutes and try again
+2. Check if the problem slug is correct
+3. Verify internet connection
+
+**Error: `Attempt X failed: <AI error>`**
+
+**Cause:** OpenAI API error or rate limit
+
+**Solutions:**
+1. Check your OpenAI account has available credits
+2. Verify API key is valid and not expired
+3. Wait and retry (scraper automatically retries 3 times)
+
+### Debug Mode
+
+To see detailed output, you can modify the scraper temporarily:
+
+```python
+# In scraper/agent.py, add after imports:
+import logging
+logging.basicConfig(level=logging.DEBUG)
+```
+
+### Getting Help
+
+If you encounter issues:
+1. Check the [main README](../README.md) troubleshooting section
+2. Review [GitHub Issues](https://github.com/shashuat/codekeybr/issues)
+3. Open a new issue with error details
+
+---
+
+## Advanced Usage
+
+### Custom AI Model
+
+To use a different OpenAI model, edit `scraper/agent.py`:
+
+```python
+MODEL_NAME = "gpt-4o"  # or "gpt-4", "gpt-3.5-turbo", etc.
+```
+
+### Batch Processing
+
+For large batch operations, consider:
+
+```bash
+# Process in chunks to avoid rate limits
+for i in {0..100..10}; do
+    python -m scraper.agent
+    sleep 60  # Wait between batches
+done
+```
+
+### Custom Output Directory
+
+Edit `scraper/agent.py`:
+
+```python
+OUTPUT_DIR = "./data/custom_problems"
+```
+
+---
+
+**For more information, see:**
+- [Architecture Guide](ARCHITECTURE.md)
+- [Multi-Platform Guide](MULTI_PLATFORM.md)
+- [Main README](../README.md)
+
 ## After Scraping
 
 ### 1. Review Generated Files
 
 Check the generated `.ts` files in `data/problems/` to ensure quality.
 
-### 2. Update the Problem Index
+### 2. Automatic Index Update
 
-Edit `data/problems.ts` to import your new problems:
-
-```typescript
-import { TWO_SUM } from './problems/two_sum';
-import { YOUR_NEW_PROBLEM } from './problems/your_new_problem';
-
-export const PROBLEMS: Problem[] = [
-  TWO_SUM,
-  YOUR_NEW_PROBLEM,
-  // ... more problems
-];
-```
+The scraper automatically updates `data/problems.ts` with new imports. No manual editing needed!
 
 ### 3. Test Your App
 
@@ -117,51 +245,11 @@ npm run dev
 
 Navigate to the problems view and verify the new problems appear correctly.
 
-## Customization
+### 4. Commit Changes
 
-### Adjusting the AI Prompt
-
-Edit the `prompt` variable in `generate_problem_file()` to customize how problems are processed.
-
-### Changing the Model
-
-Replace `gpt-4o` with another model:
-
-```python
-response = client.chat.completions.create(
-    model="gpt-4o-mini",  # Cheaper option
-    # ... rest of the config
-)
-```
-
-### Custom Output Directory
-
-Change the output directory:
-
-```python
-OUTPUT_DIR = "./custom/path/to/problems"
-```
-
-## Troubleshooting
-
-### "No data returned for {slug}"
-
-- The problem slug might be incorrect
-- LeetCode's GraphQL API might be temporarily unavailable
-- Try accessing the problem URL directly to verify it exists
-
-### "Error processing {slug}"
-
-- Check your OpenAI API key is valid and has credits
-- Verify your internet connection
-- The API might be rate-limited - wait a moment and retry
-
-### Import Errors in TypeScript
-
-Make sure the path in the import statement matches your file structure:
-
-```typescript
-import { Problem } from '../../types';  // Adjust based on your structure
+```bash
+git add data/problems/
+git commit -m "Add new LeetCode problems"
 ```
 
 ## Best Practices
@@ -172,21 +260,9 @@ import { Problem } from '../../types';  // Adjust based on your structure
 4. **Version Control**: Commit generated files separately for easy review
 5. **Rate Limiting**: Add delays between requests if scraping many problems
 
-## Advanced: Batch Processing
-
-For processing many problems, add a delay:
-
-```python
-import time
-
-for slug in slugs_to_crawl:
-    generate_problem_file(slug)
-    time.sleep(2)  # Wait 2 seconds between requests
-```
-
 ## Cost Estimation
 
-Using `gpt-4o`:
+Using `gpt-4` or `gpt-4o`:
 - ~2-3K tokens per problem
 - Cost: ~$0.01-0.05 per problem
 - 100 problems: ~$1-5
@@ -196,10 +272,9 @@ Using `gpt-4o-mini` (cheaper):
 - Cost: ~$0.001-0.005 per problem
 - 100 problems: ~$0.10-0.50
 
-## Contributing
+---
 
-Found a bug or want to improve the scraper? Submit a PR!
+**Author:** [shashuat](https://github.com/shashuat)
 
-## License
+**License:** MIT - Feel free to modify and distribute
 
-MIT - Feel free to modify and distribute

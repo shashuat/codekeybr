@@ -48,5 +48,6 @@ Finally, iterate through the second string and decrement the counts. If we encou
         
         return True`,
   "timeComplexity": "O(N)",
-  "spaceComplexity": "O(1)"
+  "spaceComplexity": "O(1)",
+  "platform": "leetcode"
 };

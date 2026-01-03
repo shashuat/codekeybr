@@ -34,5 +34,6 @@ We swap the characters at these pointers and move them towards each other until 
             left += 1
             right -= 1`,
   "timeComplexity": "O(N)",
-  "spaceComplexity": "O(1)"
+  "spaceComplexity": "O(1)",
+  "platform": "leetcode"
 };

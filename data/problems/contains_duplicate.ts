@@ -44,5 +44,6 @@ This approach provides optimal time complexity at the cost of additional space f
             seen.add(num)
         return False`,
   "timeComplexity": "O(N)",
-  "spaceComplexity": "O(N)"
+  "spaceComplexity": "O(N)",
+  "platform": "leetcode"
 };

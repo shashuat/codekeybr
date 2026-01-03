@@ -2,20 +2,23 @@ import React, { useState } from 'react';
 import { ProblemViewer } from './components/ProblemViewer';
 import { TypingArea } from './components/TypingArea';
 import { StatsModal } from './components/StatsModal';
-import { PROBLEMS } from './data/problems';
-import { TypingState } from './types';
+import { PLATFORM_CATEGORIES, ALL_PROBLEMS } from './data/index';
+import { TypingState, Platform } from './types';
 import { Code, Github, Terminal, Trophy, List, ArrowLeft, Star, Clock } from 'lucide-react';
 
 type View = 'practice' | 'problems' | 'leaderboard';
 
 export default function App() {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
+  const [selectedPlatform, setSelectedPlatform] = useState<Platform>('leetcode');
   const [view, setView] = useState<View>('practice');
   const [statsModalOpen, setStatsModalOpen] = useState(false);
   const [lastStats, setLastStats] = useState<TypingState | null>(null);
   const [refreshKey, setRefreshKey] = useState(0); // Used to reset key components
 
-  const currentProblem = PROBLEMS[currentProblemIndex];
+  const currentPlatformCategory = PLATFORM_CATEGORIES.find(cat => cat.platform === selectedPlatform);
+  const currentProblems = currentPlatformCategory?.problems || [];
+  const currentProblem = currentProblems[currentProblemIndex];
 
   const handleComplete = (stats: TypingState) => {
     setLastStats(stats);
@@ -27,7 +30,8 @@ export default function App() {
     setRefreshKey(prev => prev + 1);
   };
 
-  const switchProblem = (index: number) => {
+  const switchProblem = (platform: Platform, index: number) => {
+    setSelectedPlatform(platform);
     setCurrentProblemIndex(index);
     setView('practice');
     setRefreshKey(prev => prev + 1);
@@ -36,37 +40,71 @@ export default function App() {
   // --- Views ---
 
   const ProblemsView = () => (
-    <div className="flex-1 p-8 overflow-y-auto max-w-5xl mx-auto w-full">
+    <div className="flex-1 p-8 overflow-y-auto max-w-6xl mx-auto w-full">
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-white mb-2">Problem Set</h2>
         <p className="text-slate-400">Select a challenge to practice your muscle memory.</p>
+        
+        {/* Platform Tabs */}
+        <div className="flex gap-3 mt-6">
+          {PLATFORM_CATEGORIES.map((category) => (
+            <button
+              key={category.platform}
+              onClick={() => setSelectedPlatform(category.platform)}
+              className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                selectedPlatform === category.platform
+                  ? 'bg-primary text-white'
+                  : 'bg-surface text-slate-400 hover:bg-slate-800 hover:text-white border border-slate-700/50'
+              }`}
+            >
+              {category.displayName}
+              <span className="ml-2 text-xs opacity-75">({category.problems.length})</span>
+            </button>
+          ))}
+        </div>
       </div>
-      <div className="grid gap-4">
-        {PROBLEMS.map((problem, idx) => (
-          <div 
-            key={problem.id}
-            onClick={() => switchProblem(idx)}
-            className="group bg-surface border border-slate-700/50 p-6 rounded-xl hover:border-primary/50 hover:bg-slate-800/50 transition-all cursor-pointer flex items-center justify-between"
-          >
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">{problem.title}</h3>
-                <span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${
-                  problem.difficulty === 'Easy' ? 'bg-green-500/10 border-green-500/20 text-green-400' :
-                  problem.difficulty === 'Medium' ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400' :
-                  'bg-red-500/10 border-red-500/20 text-red-400'
-                }`}>
-                  {problem.difficulty}
-                </span>
-              </div>
-              <p className="text-sm text-slate-400 line-clamp-1">Practice implementation for {problem.title}...</p>
-            </div>
-            <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-              <span className="text-primary font-bold text-sm flex items-center gap-1">Start <ArrowLeft className="rotate-180 w-4 h-4" /></span>
-            </div>
+      
+      {currentPlatformCategory && (
+        <>
+          <div className="mb-4 p-4 bg-surface/50 border border-slate-700/30 rounded-lg">
+            <p className="text-sm text-slate-300">{currentPlatformCategory.description}</p>
           </div>
-        ))}
-      </div>
+          
+          <div className="grid gap-4">
+            {currentProblems.length === 0 ? (
+              <div className="text-center py-12 bg-surface border border-slate-700/50 rounded-xl">
+                <Code className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+                <p className="text-slate-400">No problems yet. Add some to get started!</p>
+              </div>
+            ) : (
+              currentProblems.map((problem, idx) => (
+                <div 
+                  key={problem.id}
+                  onClick={() => switchProblem(selectedPlatform, idx)}
+                  className="group bg-surface border border-slate-700/50 p-6 rounded-xl hover:border-primary/50 hover:bg-slate-800/50 transition-all cursor-pointer flex items-center justify-between"
+                >
+                  <div>
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">{problem.title}</h3>
+                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${
+                        problem.difficulty === 'Easy' ? 'bg-green-500/10 border-green-500/20 text-green-400' :
+                        problem.difficulty === 'Medium' ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400' :
+                        'bg-red-500/10 border-red-500/20 text-red-400'
+                      }`}>
+                        {problem.difficulty}
+                      </span>
+                    </div>
+                    <p className="text-sm text-slate-400 line-clamp-1">Practice implementation for {problem.title}...</p>
+                  </div>
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-primary font-bold text-sm flex items-center gap-1">Start <ArrowLeft className="rotate-180 w-4 h-4" /></span>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 
@@ -159,7 +197,7 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 flex overflow-hidden">
-        {view === 'practice' ? (
+        {view === 'practice' && currentProblem ? (
           <>
             {/* Left: Problem Description */}
             <div className="w-1/2 min-w-[400px] h-full overflow-hidden hidden md:block">
@@ -182,6 +220,20 @@ export default function App() {
               />
             </div>
           </>
+        ) : view === 'practice' && !currentProblem ? (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              <Code className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-white mb-2">No Problems Available</h3>
+              <p className="text-slate-400 mb-4">Add problems to {currentPlatformCategory?.displayName || 'this platform'} to get started.</p>
+              <button
+                onClick={() => setView('problems')}
+                className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg transition-colors"
+              >
+                Browse Problems
+              </button>
+            </div>
+          </div>
         ) : view === 'problems' ? (
           <ProblemsView />
         ) : (

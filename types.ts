@@ -1,3 +1,5 @@
+export type Platform = 'leetcode' | 'codeforces' | 'deepml';
+
 export interface Problem {
   id: string;
   title: string;
@@ -8,6 +10,15 @@ export interface Problem {
   solutionExplanation: string; // Explanation text before the code
   timeComplexity: string; // e.g., "O(N)"
   spaceComplexity: string; // e.g., "O(1)"
+  platform: Platform; // The platform this problem is from
+}
+
+export interface PlatformCategory {
+  name: string;
+  displayName: string;
+  platform: Platform;
+  problems: Problem[];
+  description: string;
 }
 
 export interface TypingState {

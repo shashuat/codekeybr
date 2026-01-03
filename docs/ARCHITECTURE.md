@@ -1,8 +1,12 @@
 # CodeKeybr Architecture Evolution
 
+**Author:** [shashuat](https://github.com/shashuat)
+
 ## Overview
 
 This document describes the evolution from a hardcoded problem system to a scalable file-based architecture with AI-powered scraping capabilities.
+
+CodeKeybr is a React-based typing practice application that helps developers build muscle memory for coding interview problems. The architecture emphasizes modularity, scalability, and ease of content addition through AI automation.
 
 ## What Changed
 
@@ -87,16 +91,125 @@ A Python script that:
 - Easy to add new problems (just create a new file)
 - No merge conflicts when multiple people add problems
 - Clean separation of concerns
+- Support for multiple platforms (LeetCode, Codeforces, DeepML)
 
 ### Maintainability
 - Each problem is self-contained
 - Easy to find and edit specific problems
 - Version control friendly (see diffs per problem)
+- Auto-generated index files reduce manual work
 
 ### Automation
 - AI agent handles the tedious conversion work
 - Consistent formatting across all problems
 - Automatic complexity analysis
+- Auto-updates problem index files
+
+## Current Architecture (2026)
+
+### Frontend Architecture
+
+**Component Structure:**
+- `App.tsx` - Main application with view routing (practice, problems, leaderboard)
+- `ProblemViewer.tsx` - Displays problem description with simple Markdown rendering
+- `TypingArea.tsx` - Main typing interface with real-time validation
+- `StatsModal.tsx` - Post-completion statistics display
+
+**State Management:**
+- `useTypingEngine.ts` - Custom hook managing typing state via reducer pattern
+- Local state for UI concerns (modals, view switching)
+- No external state management library (React hooks only)
+
+**Data Flow:**
+1. Problems imported from `data/index.ts`
+2. Organized by platform categories
+3. Selected problem passed to components via props
+4. Typing engine manages completion state
+5. Stats displayed in modal on completion
+
+### Backend (Scraper) Architecture
+
+**Python Modules:**
+- `agent.py` - Main orchestrator for scraping workflow
+- `problem_slugs.py` - Configuration of problems to scrape
+- `generate_index.py` - Auto-generates TypeScript index files
+
+**Scraper Workflow:**
+1. Load environment variables (OpenAI API key)
+2. Fetch problem from LeetCode GraphQL API
+3. Extract problem metadata and Python starter code
+4. Build detailed prompt for AI processing
+5. Call OpenAI API to generate structured JSON
+6. Generate TypeScript problem file
+7. Auto-update problems.ts index
+
+**Key Features:**
+- Checkpointing (skip existing files unless forced)
+- Retry logic (3 attempts per problem)
+- Progress tracking and reporting
+- Structured JSON output validation
+
+### Type System
+
+**Core Types:**
+```typescript
+type Platform = 'leetcode' | 'codeforces' | 'deepml';
+
+interface Problem {
+  id: string;
+  title: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  tags: string[];
+  descriptionMarkdown: string;
+  solutionCode: string;
+  solutionExplanation: string;
+  timeComplexity: string;
+  spaceComplexity: string;
+  platform: Platform;
+}
+
+interface PlatformCategory {
+  name: string;
+  displayName: string;
+  platform: Platform;
+  problems: Problem[];
+  description: string;
+}
+
+interface TypingState {
+  cursorIndex: number;
+  userInput: string;
+  mistakes: number;
+  startTime: number | null;
+  endTime: number | null;
+  isActive: boolean;
+  wpmHistory: { time: number; wpm: number }[];
+}
+```
+
+### Performance Optimizations
+
+1. **Memoization** - useMemo for combined text in TypingArea
+2. **Auto-scrolling** - Cursor stays in view during typing
+3. **Efficient re-renders** - Reducer pattern minimizes state updates
+4. **Code splitting** - Per-problem files loaded on demand
+
+### Future Architecture Considerations
+
+**Potential Enhancements:**
+- Backend API for user accounts and persistence
+- Database for storing user progress
+- WebSocket for real-time leaderboard updates
+- CDN for problem content delivery
+- Progressive Web App (PWA) support
+- Mobile-responsive design improvements
+
+---
+
+For implementation details, see:
+- [Quick Start Guide](QUICK_START.md)
+- [Scraper Documentation](SCRAPER_README.md)
+- [Multi-Platform Guide](MULTI_PLATFORM.md)
 
 ### User Experience
 - Complexity information helps learners understand trade-offs

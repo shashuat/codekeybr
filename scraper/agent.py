@@ -12,8 +12,12 @@ import json
 import time
 import requests
 from openai import OpenAI
+from dotenv import load_dotenv
 from .problem_slugs import SLUGS_TO_CRAWL
 from .generate_index import generate_problems_index
+
+# Load environment variables from .env file
+load_dotenv()
 
 # =====================
 # Configuration

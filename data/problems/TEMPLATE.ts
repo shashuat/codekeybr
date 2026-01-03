@@ -91,5 +91,8 @@ $$
   
   // Big O space complexity
   // Common values: "O(1)", "O(N)", "O(N^2)"
-  spaceComplexity: "O(N)"
+  spaceComplexity: "O(N)",
+  
+  // Platform identifier
+  platform: "leetcode",
 };

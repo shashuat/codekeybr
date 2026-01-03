@@ -1,171 +1,274 @@
 # Quick Start Guide
 
-## ✅ What's Been Implemented
+**Author:** [shashuat](https://github.com/shashuat)
 
-All requested features have been successfully implemented:
+Get up and running with CodeKeybr in 5 minutes!
 
-1. ✅ **Enhanced Type System** - Added `tags`, `timeComplexity`, and `spaceComplexity` to Problem interface
+---
+
+## 🚀 Installation
+
+### Prerequisites
+- Node.js 18+ and npm
+- Python 3.11+ (optional, for scraper)
+
+### Steps
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/shashuat/codekeybr.git
+   cd codekeybr
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Start the dev server**
+   ```bash
+   npm run dev
+   ```
+
+4. **Open in browser**
+   
+   Navigate to `http://localhost:5173`
+
+That's it! You should see the CodeKeybr interface.
+
+---
+
+## ✅ Features Implemented
+
+All core features are ready to use:
+
+1. ✅ **Enhanced Type System** - `tags`, `timeComplexity`, `spaceComplexity` in Problem interface
 2. ✅ **Modular File Structure** - Individual problem files in `data/problems/`
-3. ✅ **AI Scraper Script** - Python script with OpenAI integration (`scraper_agent.py`)
-4. ✅ **Dynamic Problem Index** - Updated `data/problems.ts` to import from individual files
-5. ✅ **Complexity Display** - Enhanced `TypingArea.tsx` to show complexity information
-6. ✅ **Example Problems** - Migrated existing problems + added 2 new ones
+3. ✅ **Multi-Platform Support** - LeetCode, Codeforces, DeepML
+4. ✅ **AI Scraper** - Python script with OpenAI GPT-4 integration
+5. ✅ **Dynamic Problem Index** - Auto-generated `data/problems.ts`
+6. ✅ **Complexity Display** - Shows Big O notation in typing area
+7. ✅ **Real-time Stats** - WPM tracking, accuracy, completion modal
+8. ✅ **Smart Typing Engine** - Tab completion, mistake tracking
 
-## 📁 New File Structure
+---
+
+## 📁 Project Structure
 
 ```
 codekeybr/
-├── scraper_agent.py              # 🆕 AI scraper
-├── SCRAPER_README.md             # 🆕 Scraper docs
-├── ARCHITECTURE.md               # 🆕 Architecture guide
-├── QUICK_START.md                # 🆕 This file
-├── types.ts                      # ✏️ Enhanced with new fields
-├── App.tsx                       # ✏️ Updated props
-├── components/
-│   └── TypingArea.tsx            # ✏️ Shows complexity
-└── data/
-    ├── problems.ts               # ✏️ Now imports from problems/
-    └── problems/                 # 🆕 Individual problem files
-        ├── two_sum.ts
-        ├── reverse_string.ts
-        ├── contains_duplicate.ts
-        └── valid_anagram.ts
+├── App.tsx                    # Main app with view routing
+├── index.tsx                  # Entry point
+├── types.ts                   # TypeScript type definitions
+├── components/                # React components
+│   ├── ProblemViewer.tsx     # Problem description
+│   ├── TypingArea.tsx        # Typing interface
+│   └── StatsModal.tsx        # Completion stats
+├── hooks/
+│   └── useTypingEngine.ts    # Typing logic
+├── data/                      # Problem data
+│   ├── index.ts              # Platform exports
+│   ├── problems.ts           # LeetCode problems
+│   ├── codeforces.ts         # Codeforces problems  
+│   ├── deepml.ts             # DeepML problems
+│   └── problems/             # Individual problem files
+│       ├── two_sum.ts
+│       ├── add_two_numbers.ts
+│       └── ...
+├── scraper/                   # Python scraper
+│   ├── agent.py              # Main scraper
+│   ├── problem_slugs.py      # Problems to scrape
+│   └── generate_index.py     # Index generator
+└── docs/                      # Documentation
+    ├── ARCHITECTURE.md
+    ├── SCRAPER_README.md
+    ├── MULTI_PLATFORM.md
+    └── QUICK_START.md (this file)
 ```
 
-## 🚀 Test Your App Right Now
+---
 
-```bash
-npm run dev
-```
+## 🎮 Using the App
 
-**What to check:**
-1. Navigate to the problems view - you should see 4 problems
-2. Select any problem to practice
-3. Notice the **"Complexity: O(N) Time | O(N) Space"** line between explanation and code
-4. Try typing through a complete problem
+### 1. Browse Problems
 
-## 🤖 Using the AI Scraper
+Click **"Problems"** in the navigation bar to see all available problems organized by platform.
 
-### Step 1: Install Dependencies
+### 2. Select a Platform
 
-```bash
-pip install openai requests
-```
+Choose from:
+- **LeetCode** - Interview preparation problems
+- **Codeforces** - Competitive programming
+- **DeepML** - Machine learning problems
 
-### Step 2: Set Your API Key
+### 3. Start Practicing
 
-```bash
-export OPENAI_API_KEY="sk-your-api-key-here"
-```
+1. Click on any problem to start
+2. Read the problem description (left panel)
+3. Start typing in the right panel
+4. Type the explanation, then complexity, then code
+5. Complete to see your stats!
 
-Or edit line 18 in `scraper_agent.py`:
-```python
-OPENAI_API_KEY = "sk-your-actual-key"
-```
+### Tips:
+- Press **Tab** for indentation (auto-detects 2 or 4 spaces)
+- Press **Enter** for newlines
+- Mistakes don't block you - keep typing!
+- Watch your real-time WPM in the top bar
 
-### Step 3: Run the Scraper
+---
 
-```bash
-python scraper_agent.py
-```
+## 🤖 Adding Problems with AI Scraper
 
-This will scrape the default 4 problems (already done, but you can test it).
+### Setup (One-time)
 
-### Step 4: Add More Problems
+1. **Install Python dependencies**
+   ```bash
+   pip install openai requests python-dotenv
+   ```
 
-Edit `scraper_agent.py` around line 135:
+2. **Create `.env` file**
+   ```bash
+   touch .env
+   ```
 
-```python
-slugs_to_crawl = [
-    "two-sum",
-    "best-time-to-buy-and-sell-stock",  # Add new ones!
-    "valid-palindrome",
-    "merge-two-sorted-lists"
-]
-```
+3. **Add your OpenAI API key**
+   ```env
+   OPENAI_API_KEY=sk-your-actual-api-key-here
+   ```
 
-Run again:
-```bash
-python scraper_agent.py
-```
+### Add Problems
 
-### Step 5: Import New Problems
+1. **Edit problem list**
+   
+   Open `scraper/problem_slugs.py` and add slugs:
+   ```python
+   SLUGS_TO_CRAWL = [
+       "two-sum",
+       "reverse-linked-list",
+       "valid-parentheses",
+       # Add more...
+   ]
+   ```
 
-Edit `data/problems.ts` and add:
+2. **Run the scraper**
+   ```bash
+   python -m scraper.agent
+   ```
 
-```typescript
-import { BEST_TIME_TO_BUY_AND_SELL_STOCK } from './problems/best_time_to_buy_and_sell_stock';
+3. **Check output**
+   
+   New problem files appear in `data/problems/` and index is auto-updated!
 
-export const PROBLEMS: Problem[] = [
-  TWO_SUM,
-  REVERSE_STRING,
-  CONTAINS_DUPLICATE,
-  VALID_ANAGRAM,
-  BEST_TIME_TO_BUY_AND_SELL_STOCK  // 🆕
-];
-```
+4. **Test in app**
+   ```bash
+   npm run dev
+   ```
 
-## 📚 Documentation
-
-- **SCRAPER_README.md** - Complete scraper documentation
-- **ARCHITECTURE.md** - Detailed architecture explanation
-- **This file** - Quick reference
-
-## 🎯 Next Steps
-
-### Immediate:
-1. Test the app to see the complexity display
-2. Try the scraper with your OpenAI key
-3. Add 5-10 more problems using the scraper
-
-### Future Enhancements:
-1. **Tag-based filtering** - Filter problems by topic
-2. **Progress tracking** - Mark problems as completed
-3. **Difficulty filtering** - Filter by Easy/Medium/Hard
-4. **Custom problem sets** - Blind 75, NeetCode 150, etc.
-5. **Statistics** - Track WPM improvement per problem
-
-## 🐛 Troubleshooting
-
-### TypeScript Errors?
-```bash
-npm run build
-```
-All types should be correct. No errors expected.
-
-### Scraper Not Working?
-- Check your OpenAI API key
-- Verify you have internet connection
-- Make sure `openai` and `requests` are installed
-- Check SCRAPER_README.md for detailed troubleshooting
-
-### Problems Not Showing Up?
-- Verify you imported the problem in `data/problems.ts`
-- Check the export name matches the import
-- Restart the dev server
-
-## 💡 Pro Tips
-
-1. **Batch Scraping**: Add 10-20 slugs at once to scrape many problems
-2. **Cost Management**: Use `gpt-4o-mini` instead of `gpt-4o` for cheaper scraping
-3. **Quality Check**: Always review AI-generated solutions for correctness
-4. **Git Workflow**: Commit generated files separately for easy review
+---
 
 ## 📊 Current Status
 
-- ✅ 4 problems available
-- ✅ All with complexity information
-- ✅ All with proper tags
-- ✅ Ready for scraping more
-- ✅ No TypeScript errors
-- ✅ No build errors
+**Problems Available:**
+- LeetCode: 7+ problems
+- Codeforces: 0 problems (ready to add)
+- DeepML: 0 problems (ready to add)
 
-## 🎉 You're All Set!
+**What's Ready:**
+- ✅ Full typing engine with validation
+- ✅ WPM tracking and charts
+- ✅ Multi-platform architecture
+- ✅ AI-powered problem scraper
+- ✅ Auto-generated problem indices
+- ✅ Complexity analysis display
 
-Your CodeKeybr app is now:
-- **Scalable** - Easy to add hundreds of problems
-- **Automated** - AI scraper handles the hard work
-- **Educational** - Shows complexity analysis
-- **Maintainable** - Clean file structure
+---
 
-**Start coding and happy typing! 🚀**
+## 🐛 Troubleshooting
+
+### Frontend Issues
+
+**Problem:** Build errors or module not found
+
+**Solution:**
+```bash
+rm -rf node_modules package-lock.json
+npm install
+npm run dev
+```
+
+### Scraper Issues
+
+**Problem:** `OpenAIError: The api_key client option must be set`
+
+**Solution:**
+1. Create `.env` file in project root
+2. Add: `OPENAI_API_KEY=sk-your-key`
+3. Install: `pip install python-dotenv`
+
+**Problem:** `ModuleNotFoundError: No module named 'openai'`
+
+**Solution:**
+```bash
+pip install openai requests python-dotenv
+```
+
+### More Help
+
+See detailed troubleshooting in:
+- [Main README](../README.md)
+- [Scraper README](SCRAPER_README.md)
+
+---
+
+## 🎯 Next Steps
+
+### Immediate Actions:
+1. ✅ Test the app - practice typing a few problems
+2. ✅ Set up scraper - add your API key
+3. ✅ Add 10+ problems - use the scraper to bulk add
+
+### Future Enhancements:
+1. **Tag Filtering** - Filter problems by topic (Array, DP, etc.)
+2. **Progress Tracking** - Mark problems as completed
+3. **Difficulty Filtering** - Easy/Medium/Hard filter
+4. **Custom Problem Sets** - Blind 75, NeetCode 150
+5. **User Accounts** - Save progress across devices
+6. **Leaderboards** - Compare with other users
+7. **Themes** - Light/dark mode, custom color schemes
+
+---
+
+## 💡 Pro Tips
+
+1. **Batch Scraping**: Add 20-50 slugs at once for bulk import
+2. **Quality Check**: Review AI-generated solutions before committing
+3. **Git Workflow**: Commit problem files separately
+4. **Cost Management**: Use GPT-4o-mini for cheaper scraping (~10x cheaper)
+5. **Problem Selection**: Focus on Blind 75 or NeetCode 150 lists
+
+---
+
+## 📚 Further Reading
+
+- **[Architecture Guide](ARCHITECTURE.md)** - Deep dive into system design
+- **[Scraper Documentation](SCRAPER_README.md)** - Complete scraper guide
+- **[Multi-Platform Guide](MULTI_PLATFORM.md)** - Add new platforms
+- **[Main README](../README.md)** - Full project overview
+
+---
+
+## 🎉 You're Ready!
+
+CodeKeybr is now ready for you to:
+- 🎯 Practice typing code solutions
+- 📈 Track your WPM improvement
+- 🧠 Learn optimal algorithms
+- 💪 Build muscle memory
+- 🚀 Ace your interviews!
+
+**Happy typing! 🎉**
+
+---
+
+**Questions or issues?** Check the [GitHub repo](https://github.com/shashuat/codekeybr) or open an issue.
+
