@@ -36,3 +36,25 @@ export type TypingAction =
   | { type: 'KEY_PRESS'; char: string; target: string }
   | { type: 'TAB'; target: string }
   | { type: 'RESET' };
+
+export interface UserProfile {
+  uid: string;
+  email: string;
+  displayName: string;
+  photoURL: string | null;
+  totalProblems: number;
+  avgWpm: number;
+  avgAccuracy: number;
+  lastUpdated: number;
+}
+
+export interface ProblemCompletion {
+  userId: string;
+  problemId: string;
+  wpm: number;
+  accuracy: number;
+  mistakes: number;
+  timeSpent: number; // in seconds
+  completedAt: number; // timestamp
+}
+

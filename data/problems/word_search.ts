@@ -1,0 +1,19 @@
+import { Problem } from '../../types';
+
+export const WORD_SEARCH: Problem = {
+  "id": "79_word_search",
+  "title": "Word Search",
+  "difficulty": "Medium",
+  "tags": [
+    "Array",
+    "String",
+    "Backtracking",
+    "DFS",
+    "Matrix"
+  ],
+  "descriptionMarkdown": "Given an m x n grid of characters board and a string word, return true if word exists in the grid.\n\nThe word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once.\n\nExamples:\n\nExample 1:\n```\nInput: board = [[\"A\",\"B\",\"C\",\"E\"],[\"S\",\"F\",\"C\",\"S\"],[\"A\",\"D\",\"E\",\"E\"]], word = \"ABCCED\"\nOutput: true\n```\n\nExample 2:\n```\nInput: board = [[\"A\",\"B\",\"C\",\"E\"],[\"S\",\"F\",\"C\",\"S\"],[\"A\",\"D\",\"E\",\"E\"]], word = \"SEE\"\nOutput: true\n```\n\nExample 3:\n```\nInput: board = [[\"A\",\"B\",\"C\",\"E\"],[\"S\",\"F\",\"C\",\"S\"],[\"A\",\"D\",\"E\",\"E\"]], word = \"ABCB\"\nOutput: false\n```\n\nConstraints:\n- m == board.length\n- n == board[i].length\n- 1 <= m, n <= 6\n- 1 <= word.length <= 15\n- board and word consist of only lowercase and uppercase English letters.\n\nFollow-up: Could you use search pruning to make your solution faster with a larger board?",
+  "solutionExplanation": "Use depth-first search with backtracking. For each cell matching the first character of the word, recursively try to match the next character by moving up, down, left, or right. Mark the current cell as visited during the path (e.g., temporarily set it to a sentinel) to avoid reusing it, and restore it on backtrack. If you reach the last character and it matches, return true. If all paths from all starting cells fail, return false.\n\nPrune the search to improve performance: first, count the frequency of letters on the board and compare with the word; if the board lacks any needed character count, return false early. Additionally, start the search from the rarer endpoint of the word by reversing the word if its last character appears fewer times than its first character on the board; this tends to prune earlier.",
+  "solutionCode": "from typing import List\nfrom collections import Counter\n\nclass Solution:\n    def exist(self, board: List[List[str]], word: str) -> bool:\n        if not board or not board[0]:\n            return False\n        m, n = len(board), len(board[0])\n\n        # Prune by character availability\n        board_count = Counter(ch for row in board for ch in row)\n        word_count = Counter(word)\n        for ch, cnt in word_count.items():\n            if board_count[ch] < cnt:\n                return False\n\n        # Heuristic: start from the rarer end to prune faster\n        if board_count[word[0]] > board_count[word[-1]]:\n            word = word[::-1]\n\n        L = len(word)\n\n        def dfs(r: int, c: int, idx: int) -> bool:\n            if board[r][c] != word[idx]:\n                return False\n            if idx == L - 1:\n                return True\n\n            tmp = board[r][c]\n            board[r][c] = '#'\n            for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < m and 0 <= nc < n and board[nr][nc] != '#':\n                    if dfs(nr, nc, idx + 1):\n                        board[r][c] = tmp\n                        return True\n            board[r][c] = tmp\n            return False\n\n        for i in range(m):\n            for j in range(n):\n                if board[i][j] == word[0] and dfs(i, j, 0):\n                    return True\n        return False\n",
+  "timeComplexity": "O(m*n*3^(L-1)) in the worst case (often written as O(m*n*4^L))",
+  "spaceComplexity": "O(L) recursion stack (in-place marking)"
+};

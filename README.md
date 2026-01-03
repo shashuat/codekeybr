@@ -29,6 +29,17 @@ CodeKeybr is a typing practice application designed for developers preparing for
 - Smart tab completion for indentation
 - Syntax highlighting for better readability
 
+### � Authentication & User Profiles
+- **Google Sign-In** - Secure authentication with your Google account
+- **Persistent User Data** - Your stats are saved across sessions
+- **Profile Tracking** - Track your progress over time
+
+### 🏆 Real Leaderboard
+- **Global Rankings** - Compete with other users
+- **Live Stats** - See your rank and average WPM
+- **Performance Tracking** - Average accuracy and problems solved
+- **Real-time Updates** - Leaderboard updates as you complete problems
+
 ### 📚 Multiple Platforms
 - **LeetCode** - Classic interview problems
 - **Codeforces** - Competitive programming challenges
@@ -40,6 +51,12 @@ CodeKeybr is a typing practice application designed for developers preparing for
 - Accuracy percentage tracking
 - WPM history with visual charts
 - Completion statistics modal
+- **Cloud-based storage** - Stats saved to Firebase
+
+### 📈 Vercel Analytics
+- Track user engagement and page views
+- Monitor application performance
+- Understand user behavior
 
 ### 🤖 AI-Powered Problem Scraper
 - Automatically fetch problems from LeetCode GraphQL API
@@ -61,6 +78,7 @@ CodeKeybr is a typing practice application designed for developers preparing for
 ### Prerequisites
 - Node.js 18+ and npm
 - Python 3.11+ (for the scraper)
+- Firebase account (for authentication and database)
 
 ### Installation
 
@@ -75,18 +93,35 @@ CodeKeybr is a typing practice application designed for developers preparing for
    npm install
    ```
 
-3. **Start the development server**
+3. **Set up Firebase** (Required for authentication and leaderboard)
+   
+   Follow the detailed guide: [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md)
+   
+   Quick steps:
+   - Create a Firebase project
+   - Enable Google Authentication
+   - Create Firestore database
+   - Copy `.env.example` to `.env` and add your Firebase config
+
+4. **Start the development server**
    ```bash
    npm run dev
    ```
 
-4. **Open your browser**
+5. **Open your browser**
    
    Navigate to `http://localhost:5173`
 
 ---
 
 ## 🎮 How to Use
+
+### Getting Started
+
+1. **Sign In** (optional but recommended)
+   - Click **"Sign In"** in the navbar
+   - Authenticate with your Google account
+   - Your profile and stats will be saved automatically
 
 ### Practice Problems
 
@@ -105,6 +140,19 @@ After completing a problem, you'll see:
 - Accuracy percentage
 - Number of mistakes
 - WPM progression graph
+
+**If signed in**, your stats will be automatically saved and contribute to:
+- Your overall average WPM
+- Your accuracy rating
+- Your leaderboard ranking
+- Your total problems solved count
+
+### Compete on the Leaderboard
+
+1. Click **"Leaderboard"** in the navbar
+2. See top users ranked by average WPM
+3. Find your position and stats
+4. Complete more problems to climb the ranks!
 
 ---
 
@@ -160,7 +208,9 @@ FORCE_REGENERATE=true python -m scraper.agent
 ```
 codekeybr/
 ├── App.tsx                    # Main application component
-├── index.tsx                  # Entry point
+├── index.tsx                  # Entry point with Analytics
+├── AuthContext.tsx            # Authentication context provider
+├── firebase.ts                # Firebase configuration
 ├── types.ts                   # TypeScript type definitions
 ├── constants.ts               # Global constants
 ├── components/                # React components
@@ -169,6 +219,8 @@ codekeybr/
 │   └── StatsModal.tsx        # Completion statistics
 ├── hooks/
 │   └── useTypingEngine.ts    # Typing logic and state management
+├── services/
+│   └── userService.ts        # Firestore user data operations
 ├── data/                      # Problem data
 │   ├── index.ts              # Platform categories export
 │   ├── problems.ts           # LeetCode problems index
@@ -186,6 +238,7 @@ codekeybr/
     ├── ARCHITECTURE.md       # Architecture overview
     ├── QUICK_START.md        # Quick start guide
     ├── SCRAPER_README.md     # Scraper documentation
+    ├── FIREBASE_SETUP.md     # Firebase & Auth setup guide
     └── MULTI_PLATFORM.md     # Multi-platform guide
 ```
 
@@ -199,6 +252,12 @@ codekeybr/
 - **Vite** - Build tool and dev server
 - **Lucide React** - Icon library
 - **Recharts** - Chart visualization
+- **Vercel Analytics** - User analytics
+
+### Backend & Services
+- **Firebase Authentication** - Google Sign-In
+- **Firestore Database** - User profiles and stats storage
+- **Firebase SDK** - Real-time data sync
 
 ### Scraper
 - **Python 3.11+** - Scripting language
@@ -244,6 +303,7 @@ The app supports multiple coding platforms through a modular structure:
 
 - **[Architecture Guide](docs/ARCHITECTURE.md)** - System design and evolution
 - **[Quick Start Guide](docs/QUICK_START.md)** - Get up and running quickly
+- **[Firebase Setup Guide](docs/FIREBASE_SETUP.md)** - Complete authentication & database setup
 - **[Scraper Documentation](docs/SCRAPER_README.md)** - Detailed scraper usage
 - **[Multi-Platform Guide](docs/MULTI_PLATFORM.md)** - Adding new platforms and problems
 
@@ -256,7 +316,7 @@ Contributions are welcome! Here are some ways you can contribute:
 1. **Add more problems** - Use the scraper to add problems from LeetCode
 2. **Support new platforms** - Add Codeforces, HackerRank, etc.
 3. **Improve the UI** - Better styling, animations, themes
-4. **Add features** - Leaderboards, user accounts, problem filtering
+4. **Add features** - Advanced filters, study plans, friend system
 5. **Fix bugs** - Report or fix issues
 
 ### Development Workflow
@@ -292,6 +352,24 @@ FORCE_REGENERATE=true python -m scraper.agent
 
 ## 🐛 Troubleshooting
 
+### Authentication Issues
+
+**Problem:** "Firebase: Error (auth/unauthorized-domain)"
+
+**Solution:** Add your domain to Firebase authorized domains:
+- Firebase Console → Authentication → Settings → Authorized domains
+- Add `localhost` for local development
+- Add your production domain for deployment
+
+### Database Permission Errors
+
+**Problem:** "Missing or insufficient permissions"
+
+**Solution:** 
+- Check your Firestore security rules (see [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md))
+- Make sure you're signed in when testing
+- Verify your Firebase project is properly configured
+
 ### Scraper Issues
 
 **Problem:** `OpenAIError: The api_key client option must be set`
@@ -322,6 +400,13 @@ pip install openai requests python-dotenv
 rm -rf node_modules package-lock.json
 npm install
 ```
+
+**Problem:** Environment variables not loading
+
+**Solution:**
+- Restart your dev server after changing `.env`
+- Ensure variables start with `VITE_`
+- Check that `.env` exists in the project root
 
 ---
 
