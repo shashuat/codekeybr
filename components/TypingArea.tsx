@@ -7,15 +7,23 @@ import { TypingState } from '../types';
 interface TypingAreaProps {
   explanation: string;
   code: string;
+  timeComplexity: string;
+  spaceComplexity: string;
   onComplete: (state: TypingState) => void;
 }
 
-export const TypingArea: React.FC<TypingAreaProps> = ({ explanation, code, onComplete }) => {
-  // Combine explanation and code into one target string
-  // Add a clear visual separator in the text structure (newlines)
+export const TypingArea: React.FC<TypingAreaProps> = ({ 
+  explanation, 
+  code, 
+  timeComplexity, 
+  spaceComplexity, 
+  onComplete 
+}) => {
+  // Combine explanation, complexity info, and code into one target string
+  // Add clear visual separators in the text structure (newlines)
   const fullText = useMemo(() => {
-    return `${explanation.trim()}\n\n\n${code.trim()}`;
-  }, [explanation, code]);
+    return `${explanation.trim()}\n\n\nComplexity: ${timeComplexity} Time | ${spaceComplexity} Space\n\n\n${code.trim()}`;
+  }, [explanation, code, timeComplexity, spaceComplexity]);
 
   const { state, handleKeyDown, reset } = useTypingEngine(fullText);
   const containerRef = useRef<HTMLDivElement>(null);

@@ -176,6 +176,8 @@ export default function App() {
                 key={refreshKey} // Forces remount on retry/switch
                 explanation={currentProblem.solutionExplanation}
                 code={currentProblem.solutionCode}
+                timeComplexity={currentProblem.timeComplexity}
+                spaceComplexity={currentProblem.spaceComplexity}
                 onComplete={handleComplete}
               />
             </div>

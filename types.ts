@@ -2,9 +2,12 @@ export interface Problem {
   id: string;
   title: string;
   difficulty: 'Easy' | 'Medium' | 'Hard';
+  tags: string[]; // For filtering by category (e.g., "Arrays", "Hash Table")
   descriptionMarkdown: string; // The textual question
   solutionCode: string; // The code to be typed
   solutionExplanation: string; // Explanation text before the code
+  timeComplexity: string; // e.g., "O(N)"
+  spaceComplexity: string; // e.g., "O(1)"
 }
 
 export interface TypingState {
