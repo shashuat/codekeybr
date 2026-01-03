@@ -56,9 +56,9 @@ Explain the mathematical operation and why this is the output.
 
 ## Requirements
 
-- Use NumPy for matrix operations
-- Do not use built-in ML libraries (scikit-learn, PyTorch, etc.)
-- Implement from scratch
+- Use PyTorch for implementation
+- Implement the solution using PyTorch tensors and operations
+- Follow PyTorch best practices
 `,
 
   // The solution explanation (appears before code)
@@ -75,26 +75,31 @@ Explain the mathematical operation and why this is the output.
 4. Return result`,
 
   // The actual code to type (use realistic indentation)
-  solutionCode: `import numpy as np
+  solutionCode: `import torch
+import torch.nn as nn
 
 def solve(X, y):
     """
-    Implement the ML algorithm
+    Implement the ML algorithm using PyTorch
     """
+    # Convert to tensors
+    X = torch.tensor(X, dtype=torch.float32)
+    y = torch.tensor(y, dtype=torch.float32)
+    
     # Initialize weights
-    w = np.random.randn(X.shape[1])
+    w = torch.randn(X.shape[1], requires_grad=True)
     
     # Forward pass
-    z = np.dot(X, w)
+    z = torch.matmul(X, w)
     
     # Activation
-    output = 1 / (1 + np.exp(-z))
+    output = torch.sigmoid(z)
     
     return output
 
 # Example usage
-X = np.array([[1, 2], [3, 4]])
-y = np.array([0, 1])
+X = [[1, 2], [3, 4]]
+y = [0, 1]
 result = solve(X, y)
 print(result)`,
 

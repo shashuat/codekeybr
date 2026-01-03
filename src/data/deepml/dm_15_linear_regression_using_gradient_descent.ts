@@ -1,0 +1,20 @@
+import { Problem } from '../../types';
+
+export const DM_15_LINEAR_REGRESSION_USING_GRADIENT_DESCENT: Problem = {
+  "id": "dm_15_linear_regression_using_gradient_descent",
+  "title": "Linear Regression Using Gradient Descent",
+  "difficulty": "Easy",
+  "tags": [
+    "Optimization",
+    "Gradient Descent",
+    "Linear Algebra",
+    "Matrix Operations",
+    "Loss Functions"
+  ],
+  "descriptionMarkdown": "Write a Python function that performs linear regression using gradient descent. The function should take NumPy arrays X (features with a column of ones for the intercept) and y (target) as input, along with learning rate alpha and the number of iterations, and return the coefficients of the linear regression model as a NumPy array. Round your answer to four decimal places. -0.0 is a valid result for rounding a very small number.\n\nExample:\n\nInput:\n- X = np.array([[1, 1], [1, 2], [1, 3]])\n- y = np.array([1, 2, 3])\n- alpha = 0.01\n- iterations = 1000\n\nOutput:\n- np.array([0.1107, 0.9513])\n\nReasoning:\nThe linear model is y = 0.0 + 1.0*x, which fits the input data after gradient descent optimization.",
+  "solutionExplanation": "We model linear regression as y \u2248 Xw, where X \u2208 R^{m\u00d7n} includes a column of ones for the intercept and w \u2208 R^n are the coefficients. We minimize the mean squared error loss J(w) = (1/m) \u00b7 1/2 \u00b7 ||Xw \u2212 y||^2. The gradient of this loss with respect to w is \u2207J(w) = (1/m) X^T (Xw \u2212 y).\n\nBatch gradient descent iteratively updates the parameters using w := w \u2212 \u03b1 \u2207J(w), where \u03b1 is the learning rate. Starting from zeros, we repeat this update for the specified number of iterations. The implementation uses efficient PyTorch tensor operations for matrix\u2013vector products and gradient computation, then returns the final coefficients rounded to four decimal places as a NumPy array.\n\nRounding is performed by scaling, applying round, and scaling back to ensure results like \u22120.0 are possible for very small values. The provided example converges close to the true underlying model y = 1\u00b7x with near-zero intercept.",
+  "solutionCode": "import numpy as np\nimport torch\n\n\ndef linear_regression_gradient_descent(X: np.ndarray, y: np.ndarray, alpha: float, iterations: int) -> np.ndarray:\n    \"\"\"Perform linear regression using batch gradient descent with PyTorch.\n\n    Args:\n        X: NumPy array of shape (m, n) containing features. The first column should be ones for intercept.\n        y: NumPy array of shape (m,) containing target values.\n        alpha: Learning rate (float).\n        iterations: Number of gradient descent steps (int).\n\n    Returns:\n        NumPy array of shape (n,) with the learned coefficients, rounded to 4 decimal places.\n    \"\"\"\n    # Convert inputs to PyTorch tensors (use float64 for numerical stability)\n    X_t = torch.from_numpy(np.asarray(X)).to(dtype=torch.float64)\n    y_t = torch.from_numpy(np.asarray(y).reshape(-1)).to(dtype=torch.float64)\n\n    m, n = X_t.shape\n    # Initialize parameters to zeros\n    w = torch.zeros(n, dtype=torch.float64)\n\n    # Batch gradient descent\n    for _ in range(int(iterations)):\n        # Predictions: (m,)\n        preds = X_t.mv(w)  # efficient matrix-vector multiply\n        # Error: (m,)\n        error = preds - y_t\n        # Gradient: (n,) = (n, m) @ (m,) / m\n        grad = X_t.t().mv(error) / m\n        # Parameter update\n        w = w - alpha * grad\n\n    # Round to 4 decimal places; -0.0 is preserved when applicable\n    w = torch.round(w * 1e4) / 1e4\n    return w.cpu().numpy()\n\n\ndef solution():\n    # Example usage\n    X = np.array([[1, 1], [1, 2], [1, 3]], dtype=float)\n    y = np.array([1, 2, 3], dtype=float)\n    alpha = 0.01\n    iterations = 1000\n    coeffs = linear_regression_gradient_descent(X, y, alpha, iterations)\n    print(coeffs)\n    return coeffs\n",
+  "timeComplexity": "O(T * m * n), where T is iterations, m is number of samples, and n is number of features",
+  "spaceComplexity": "O(m * n) to store X plus O(n) for parameters",
+  "platform": "deepml"
+};

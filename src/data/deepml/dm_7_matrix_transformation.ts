@@ -1,0 +1,17 @@
+import { Problem } from '../../types';
+
+export const DM_7_MATRIX_TRANSFORMATION: Problem = {
+  "id": "dm_7_matrix_transformation",
+  "title": "Matrix Transformation",
+  "difficulty": "Medium",
+  "tags": [
+    "Linear Algebra",
+    "Matrix Operations"
+  ],
+  "descriptionMarkdown": "Write a Python function that transforms a given matrix A using the operation T^{-1} A S, where T and S are invertible matrices. The function should first validate that T and S are invertible and dimensionally compatible with A. If either matrix is not invertible or the shapes are incompatible, return -1.\n\nExample:\n- Input:\n  - A = [[1, 2], [3, 4]]\n  - T = [[2, 0], [0, 2]]\n  - S = [[1, 1], [0, 1]]\n- Output:\n  - [[0.5, 1.5], [1.5, 3.5]]\n\nThe matrices T and S transform A by computing T^{-1} A S.",
+  "solutionExplanation": "We need to compute a linear change-of-basis\u2013style transformation on matrix A using two invertible matrices T and S. The expected result, inferred from the provided example, is T^{-1} A S. Before performing this computation, we must verify that T and S are square, dimensionally compatible with A (i.e., T is m\u00d7m when A is m\u00d7n, and S is n\u00d7n), and invertible.\n\nTo validate invertibility robustly, we check that each matrix has full rank using torch.linalg.matrix_rank and then attempt inversion with torch.linalg.inv. If any check fails or inversion raises an error (e.g., due to singularity), we return -1. Otherwise, we compute T^{-1} @ A @ S using efficient tensor operations in PyTorch and return the result as a nested Python list. This approach ensures numerical stability and clear error handling while adhering to the problem's constraints.",
+  "solutionCode": "import torch\n\ndef transform_matrix(A, T, S):\n    \"\"\"\n    Transform matrix A using T^{-1} A S with validation.\n    - A: list[list[float|int]] of shape (m, n)\n    - T: list[list[float|int]] of shape (m, m), must be invertible\n    - S: list[list[float|int]] of shape (n, n), must be invertible\n    Returns:\n      - list[list[float]] of transformed matrix if successful\n      - -1 if shapes are incompatible or T/S are not invertible\n    \"\"\"\n    # Convert inputs to double precision tensors for numerical stability\n    try:\n        A_t = torch.tensor(A, dtype=torch.float64)\n        T_t = torch.tensor(T, dtype=torch.float64)\n        S_t = torch.tensor(S, dtype=torch.float64)\n    except Exception:\n        return -1\n\n    # Basic shape checks\n    if A_t.dim() != 2 or T_t.dim() != 2 or S_t.dim() != 2:\n        return -1\n\n    m, n = A_t.shape\n    if T_t.shape[0] != T_t.shape[1] or S_t.shape[0] != S_t.shape[1]:\n        return -1\n    if T_t.shape[0] != m or S_t.shape[0] != n:\n        return -1\n\n    # Invertibility checks: full rank and successful inversion\n    try:\n        if torch.linalg.matrix_rank(T_t) != T_t.shape[0]:\n            return -1\n        if torch.linalg.matrix_rank(S_t) != S_t.shape[0]:\n            return -1\n\n        T_inv = torch.linalg.inv(T_t)\n    except RuntimeError:\n        return -1\n\n    # Perform the transformation: T^{-1} A S\n    result = T_inv @ A_t @ S_t\n\n    # Convert to nested Python list of floats\n    return [[float(x) for x in row] for row in result.tolist()]\n\n\ndef solution():\n    # Example usage\n    A = [[1, 2], [3, 4]]\n    T = [[2, 0], [0, 2]]\n    S = [[1, 1], [0, 1]]\n    return transform_matrix(A, T, S)\n\nif __name__ == \"__main__\":\n    print(solution())\n",
+  "timeComplexity": "O(n^3)",
+  "spaceComplexity": "O(n^2)",
+  "platform": "deepml"
+};

@@ -2,7 +2,7 @@
 
 **Author:** [shashuat](https://github.com/shashuat)
 
-An AI-powered tool to automatically scrape LeetCode problems and convert them into CodeKeybr's problem format.
+An AI-powered tool to automatically scrape problems from multiple platforms (LeetCode, DeepML) and convert them into CodeKeybr's problem format.
 
 ## Features
 
@@ -21,12 +21,17 @@ An AI-powered tool to automatically scrape LeetCode problems and convert them in
 
 **Required packages:**
 ```bash
-pip install openai requests python-dotenv
+# Install from the scraper directory
+pip install -r scraper/requirements.txt
+
+# Or install individually
+pip install openai requests beautifulsoup4 python-dotenv
 ```
 
 **What each package does:**
 - `openai` - OpenAI API client for GPT-4 integration
-- `requests` - HTTP client for LeetCode GraphQL queries
+- `requests` - HTTP client for API queries and web scraping
+- `beautifulsoup4` - HTML parsing for DeepML scraper
 - `python-dotenv` - Load environment variables from .env file
 
 ### 2. Set Your OpenAI API Key
@@ -61,12 +66,12 @@ export OPENAI_API_KEY="sk-your-api-key-here"
 
 ## Usage
 
-### Basic Usage
+### LeetCode Scraper
 
 From the project root directory:
 
 ```bash
-python -m scraper.agent
+python -m scraper leetcode
 ```
 
 **What happens:**
@@ -81,12 +86,58 @@ python -m scraper.agent
 4. Auto-generates `src/data/problems.ts` index file
 5. Prints summary statistics
 
+### DeepML Scraper
+
+From the project root directory:
+
+```bash
+python -m scraper deepml
+```
+
+**What happens:**
+1. Loads environment variables from `.env`
+2. Iterates through problem IDs 1-301
+3. For each problem:
+   - Fetches HTML from `https://www.deep-ml.com/problems/{id}`
+   - Parses HTML to extract problem details
+   - Uses AI to structure content and generate PyTorch solution
+   - Generates TypeScript problem file
+   - Saves to `src/data/deepml/`
+4. Auto-generates `src/data/deepml.ts` index file
+5. Prints summary statistics
+
+**DeepML-specific features:**
+- Extracts solutions directly from the website when available
+- Enforces PyTorch-based solutions (not NumPy)
+- Sequential problem numbering (1-301)
+- Handles missing problems gracefully (404s)
+
+### Scrape Specific Problem Range (DeepML)
+
+To scrape only a subset of problems:
+
+```bash
+START_ID=1 END_ID=50 python -m scraper deepml
+```
+
+**Example use cases:**
+- `START_ID=1 END_ID=10` - Test with first 10 problems
+- `START_ID=50 END_ID=100` - Continue from problem 50
+- `START_ID=200 END_ID=201` - Scrape a single problem
+
 ### Force Regeneration
 
 To overwrite existing problem files:
 
 ```bash
-FORCE_REGENERATE=true python -m scraper.agent
+# LeetCode
+FORCE_REGENERATE=true python -m scraper leetcode
+
+# DeepML
+FORCE_REGENERATE=true python -m scraper deepml
+
+# DeepML with range
+FORCE_REGENERATE=true START_ID=1 END_ID=50 python -m scraper deepml
 ```
 
 **Use cases:**
@@ -96,7 +147,26 @@ FORCE_REGENERATE=true python -m scraper.agent
 
 ### Configuration
 
-Edit `scraper/problem_slugs.py` to configure which problems to scrape:
+**LeetCode:** Edit `scraper/problem_slugs.py` to configure which problems to scrape:
+
+```python
+SLUGS_TO_CRAWL = [
+    "two-sum",
+    "add-two-numbers", 
+    "longest-substring-without-repeating-characters",
+    # Add more slugs here
+]
+```
+
+**DeepML:** Edit `scraper/deepml_problem_ids.py` or use environment variables:
+
+```python
+# All problems (default)
+PROBLEM_IDS = list(range(1, 302))
+
+# Or use environment variables:
+# START_ID=1 END_ID=100 python -m scraper deepml
+```
 
 ```python
 SLUGS_TO_CRAWL = [
@@ -262,15 +332,24 @@ git commit -m "Add new LeetCode problems"
 
 ## Cost Estimation
 
+### LeetCode Scraper
 Using `gpt-4` or `gpt-4o`:
 - ~2-3K tokens per problem
 - Cost: ~$0.01-0.05 per problem
 - 100 problems: ~$1-5
 
-Using `gpt-4o-mini` (cheaper):
-- Same token count
-- Cost: ~$0.001-0.005 per problem
-- 100 problems: ~$0.10-0.50
+### DeepML Scraper
+Using `gpt-4o` (default):
+- ~5-8K tokens per problem (larger HTML content)
+- Cost: ~$0.02-0.08 per problem
+- 301 problems: ~$6-25
+- First 100 problems: ~$2-8
+
+**Cost optimization tips:**
+1. Start with a small range (START_ID=1 END_ID=10)
+2. Use checkpointing (don't set FORCE_REGENERATE=true)
+3. Monitor API usage in OpenAI dashboard
+4. Consider using gpt-4o-mini for cheaper processing (update MODEL_NAME in code)
 
 ---
 
